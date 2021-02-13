@@ -18,11 +18,13 @@ save_k <- function(loc, filename, format = "png") {
 }
 
 #### fonts ####
-ft <- "Verdana Pro Light"
-ftb <- "Verdana Pro Black"
+# ft <- "Verdana Pro Light"
+# ftb <- "Verdana Pro Black"
+ft <- "Sarabun ExtraLight"
+ftb <- "Sarabun ExtraBold"
 
 #### palette ####
-col1 <- "#718355" # neutral colour  faedcd
+col1 <- "#ccd5ae" # neutral colour  faedcd ccd5ae
 col2 <- "white"
 bg <- "black"
 
@@ -89,7 +91,7 @@ main <- df$income_mean %>%
   scale_fill_manual(values = c(col1, "black"))
 
 text <- ggplot() +
-  geom_text(aes(x = 0.1, y = 0.57), label = title, family = ftb, colour = col1, size = 16, hjust = 0) +
+  geom_text(aes(x = 0.1, y = 0.57), label = title, family = ftb, colour = col1, size = 20, hjust = 0) +
   geom_text(aes(x = 0.1, y = 0.35), label = subtitle, family = ft, colour = col1, size = 5, hjust = 0) +
   theme_void() +
   theme(
@@ -100,5 +102,5 @@ text <- ggplot() +
 ggdraw() +
   draw_plot(main) +
   draw_plot(text, 0.05, 0.35, 0.3, 0.95) +
-  ggsave(save_k("2021/week-7/plots", "income"), height = 10, width = 24)
+  ggsave(save_k("2021/week-7/plots", "income"), height = 10, width = 22)
 
