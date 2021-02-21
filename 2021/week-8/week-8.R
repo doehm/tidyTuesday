@@ -16,7 +16,7 @@ save_k <- function(loc, filename, format = "png") {
 
 #### data load ####
 
-df <- tt_load(2021, week = 8)
+df <- tidytuesdayR::tt_load(2021, week = 8)
 freed_slaves <- df$freed_slaves %>%
   clean_names()
 
