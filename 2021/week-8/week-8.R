@@ -2,9 +2,7 @@
 library(tidyverse)
 library(janitor)
 library(magick)
-library(patchwork)
-library(extrafont)
-library(evoPalette) # devtools::install_github("doehm/evoPalette)
+library(evoPalette) # devtools::install_github("doehm/evoPalette")
 extrafont::loadfonts(device = "win", quiet = TRUE)
 
 #### helpers ####
@@ -16,7 +14,7 @@ save_k <- function(loc, filename, format = "png") {
 
 #### data load ####
 
-df <- tt_load(2021, week = 8)
+df <- tidytuesdayR::tt_load(2021, week = 8)
 freed_slaves <- df$freed_slaves %>%
   clean_names()
 
@@ -52,7 +50,7 @@ lines_df <- labels %>%
     )
 
 title1 <- "PROPORTION  OF  FREEMEN  AND  SLAVES  AMONG  AMERICAN  NEGROES  ."
-title2 <- "PROPORTION  DES  NEGRES  LIBRES  ET  DES  ESCLAVES  EN  AMERIQUE  ."
+title2 <- "PROPORTION  DES  NÈGRES  LIBRES  ET  DES  ESCLAVES  EN  AMÉRIQUE  ."
 subtitle <- "DONE  BY  ATLANTA  UNIVERSITY  ."
 
 #### plots ####
@@ -71,6 +69,7 @@ freed_slaves %>%
   annotate("text", x = 1830, y = 140, label = title1, family = ftc, col = ft_col, fontface = "bold", size = 7, alpha = 0.8) +
   annotate("text", x = 1830, y = 130, label = title2, family = ftc, col = ft_col, fontface = "bold", size = 7, alpha = 0.8) +
   annotate("text", x = 1830, y = 120, label = subtitle, family = ftc, col = ft_col, fontface = "bold", size = 5, alpha = 0.8) +
+  annotate("text", x = 1830, y = -3, label = "#DuBoisChallenge #TidyTuesday @danoehm", family = ftc, col = ft_col, size = 4, alpha = 0.8) +
   theme_void() +
   theme(
     plot.background = element_rect(fill = bg),
