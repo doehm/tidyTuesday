@@ -4,7 +4,7 @@ library(janitor)
 library(magick)
 library(patchwork)
 library(extrafont)
-library(evoPalette) # devtools::install_github("doehm/evoPalette)
+library(evoPalette) # devtools::install_github("doehm/evoPalette")
 extrafont::loadfonts(device = "win", quiet = TRUE)
 
 #### helpers ####
