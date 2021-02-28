@@ -29,8 +29,8 @@ col2 <- "white"
 bg <- "black"
 
 #### titles ####
-wd <- 70
-title <- "Income Inequality"
+wd <- 40
+title <- "Income \nInequality"
 subtitle0 <- str_wrap(
   "The income gap between White and Black American middle income earners between
   1967 and 2019",
@@ -75,32 +75,41 @@ main <- df$income_mean %>%
   mutate(difference = ifelse(race == "Black Alone", 1, income_dollars/max(income_dollars))) %>%
   ggplot(aes(x = year, y = income_dollars, fill = race, alpha = difference, colour = NULL)) +
   geom_bar(stat = "identity", position = "identity") +
-  geom_text(data = ann_df, mapping = aes(x = x, y = y, label = label), colour = col1, family = ft, size = 5) +
+  # geom_text(data = ann_df, mapping = aes(x = x, y = y, label = label), colour = col1, family = ft, size = 5) +
   theme_void() +
   theme(
     plot.background = element_rect(fill = bg),
     plot.margin = margin(l = 80, t = 40, r = 40),
     legend.position = "none",
-    plot.caption = element_text(family = ft, colour = col1, margin = margin(b = 20), size = 12)
+    plot.caption = element_text(family = ft, colour = col1, margin = margin(b = 20), size = 6, hjust = 0.5)
   ) +
   labs(
     caption = "Source: Urban Institute and US Census / Graphic: @danoehm"
   ) +
-  coord_cartesian(clip = "off") +
-  # coord_polar("y", clip = "off") +
+  # coord_cartesian(clip = "off") +
+  coord_polar("y", clip = "off") +
   scale_fill_manual(values = c(col1, "black"))
 
+# text <- ggplot() +
+#   geom_text(aes(x = 0.1, y = 0.57), label = title, family = ftb, colour = col1, size = 20, hjust = 0) +
+#   geom_text(aes(x = 0.1, y = 0.35), label = subtitle, family = ft, colour = col1, size = 5, hjust = 0) +
+#   theme_void() +
+#   theme(
+#     plot.background = element_rect(fill = bg)
+#   ) +
+#   coord_cartesian(clip = "off", xlim = c(0, 1), ylim = c(0, 1))
+
 text <- ggplot() +
-  geom_text(aes(x = 0.1, y = 0.57), label = title, family = ftb, colour = col1, size = 20, hjust = 0) +
-  geom_text(aes(x = 0.1, y = 0.35), label = subtitle, family = ft, colour = col1, size = 5, hjust = 0) +
+  geom_text(aes(x = 0.1, y = 0.5), label = title, family = ftb, colour = col1, size = 8, hjust = 0) +
+  geom_text(aes(x = 0.1, y = 0.35), label = subtitle, family = ft, colour = col1, size = 2, hjust = 0) +
   theme_void() +
   theme(
     plot.background = element_rect(fill = bg)
   ) +
-  coord_cartesian(clip = "off", xlim = c(0, 1), ylim = c(0, 1))
+  coord_cartesian(clip = "off", xlim = c(0, 1), ylim = c(0.35, 0.52))
 
 ggdraw() +
   draw_plot(main) +
-  draw_plot(text, 0.05, 0.35, 0.3, 0.95) +
-  ggsave(save_k("2021/week-7/plots", "income"), height = 10, width = 22)
+  draw_plot(text, 0.33, 0.5, 0.1, 0.2) +
+  ggsave(save_k("2021/week-7/plots", "income"), height = 10, width = 10.66)
 
