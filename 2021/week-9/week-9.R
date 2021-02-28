@@ -12,18 +12,10 @@ save_k <- function(loc, filename, format = "png") {
   glue("{loc}/{filename}-{str_pad(k, 3, 'left', '0')}.{format}")
 }
 
-min_max <- function(x){
-  (x - min(x))/(max(x) - min(x))
-}
-
 #### data ####
 df <- tidytuesdayR::tt_load(2021, week = 9)
 
-earn <- df$earn %>%
-  mutate(
-    median_weekly_earn = min_max(median_weekly_earn) + 0.1,
-    n_persons = min_max(n_persons) + 0.1
-  )
+earn <- df$earn
 
 #### fonts ####
 # ftc <- "Gill Sans Nova Cond"
