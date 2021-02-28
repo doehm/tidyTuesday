@@ -1,7 +1,8 @@
 library(tidyverse)
 library(janitor)
-library(evoPalette) # devtools::install_github("doehm/evoPalette")
-library(survivoR)
+library(glue)
+library(survivoR) # devtools::install_github("doehm/survivoR")
+library(extrafont)
 extrafont::loadfonts(quiet = TRUE)
 
 #### helpers ####
