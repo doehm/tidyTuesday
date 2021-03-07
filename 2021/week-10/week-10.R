@@ -5,10 +5,12 @@ library(survivoR) # devtools::install_github("doehm/survivoR")
 library(rstanarm)
 library(snakecase)
 library(lubridate)
+library(ggtext)
 library(extrafont)
 extrafont::loadfonts(quiet = TRUE)
 
 #### helpers ####
+# there's probably a way better way to do this but I couldn't find it
 posterior_sims <- function(object, long = TRUE, ...) {
   nm <- names(object$coefficients)
   np <- length(nm)
