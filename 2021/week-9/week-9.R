@@ -5,16 +5,8 @@ library(survivoR) # devtools::install_github("doehm/survivoR")
 library(extrafont)
 extrafont::loadfonts(quiet = TRUE)
 
-#### helpers ####
-save_k <- function(loc, filename, format = "png") {
-  k <- max(as.numeric(str_extract(list.files(loc), "[:digit:]+")) + 1)
-  if(is.infinite(k)) k <- "001"
-  glue("{loc}/{filename}-{str_pad(k, 3, 'left', '0')}.{format}")
-}
-
 #### data ####
 df <- tidytuesdayR::tt_load(2021, week = 9)
-
 earn <- df$earn
 
 #### fonts ####
@@ -27,7 +19,6 @@ ft <- "Verdana Pro Cond Light"
 #### palette ####
 season <- 10
 sp <- season_palettes$palette[[season]]
-col1 <- "#ccd5ae" # neutral colour  faedcd ccd5ae
 col2 <- sp[1]
 bg <- colorRampPalette(c("black", sp[2]))(8)
 
