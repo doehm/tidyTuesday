@@ -27,10 +27,12 @@ posterior_sims <- function(object, long = TRUE, ...) {
 tt <- tidytuesdayR::tt_load(2021, week = 10)
 df <- tt$youtube %>%
   mutate(likes_per_view = like_count/view_count)
-beta_df <- posterior_sims(mod)
 
 #### stan ####
-dfxx <- dfx %>%
+v <- c("funny", "show_product_quickly", "patriotic", "celebrity", "danger", "animals", "use_sex")
+dfxx <- df %>%
+  mutate_if(is.logical, as.integer) %>%
+  filter(likes_per_view > 0) %>%
   select(likes_per_view, brand, view_count, v) %>%
   mutate(
     log_lpv = log(1000*likes_per_view),
@@ -54,20 +56,20 @@ mod_views <- stan_glm(
 beta_df <- posterior_sims(mod)
 beta_df_view <- posterior_sims(mod_views)
 
-beta_df <- beta_df %>%
-  mutate(model = "lpv") %>%
-  bind_rows(
-    beta_df_view %>%
-      mutate(model = "views")
-    )
+# beta_df <- beta_df %>%
+#   mutate(model = "lpv") %>%
+#   bind_rows(
+#     beta_df_view %>%
+#       mutate(model = "views")
+#     )
 
 
 
 #### fonts ####
-# ftc <- "Gill Sans Nova Cond"
-# ft <- "Gill Sans Nova"
 ftc <- "Verdana Pro Cond Black"
 ft <- "Verdana Pro Cond Light"
+font_size_low <- 14
+font_size_high <- 26
 
 
 #### palette ####
@@ -80,13 +82,16 @@ show_palette(sp)
 #### titles ####
 wd <- 80
 title <- str_wrap("Median Weekly Earnings", wd/3)
-subtitle <- "
-  Superbowl ads that feature celebrities, a certain level of danger and animals tend to get higher
-  number of likes per 100 views in Youtube. Curiously, ads that are funny (or try to be) and use
-  sex tend to get lower number of likes per 1000 views. However, ads that are funny or are in some
-  way patriotic tend to get more views in general. Feature effects estimated using rstanarm::lstan_glm
-"
-subtitle <- str_wrap(subtitle, 160)
+subtitle1 <- str_wrap("
+  Superbowl ads that feature celebrities typically see an increase of 2.1 likes per 1000 views on Youtube.
+  To a lesser degree ads featuring a certain level of danger or featuring animals tend to get higher
+  number of likes / views. Curiously, ads that are funny (or try to be) and use
+  sex tend to get lower number of likes / views. However, ads that are funny or are in some
+  way patriotic tend to get more views overall, but proportionally less likes.
+", 180)
+subtitle2 <- str_wrap("Feature effects are estimated using rstanarm::stan_glm and 2000 sims. Each line is a
+                      draw from the posterior.", 180)
+subtitle <- paste(subtitle1, "\n\n", subtitle2)
 strip_titles <- str_wrap(to_title_case(c("intercept", v)), 10)
 
 stats_df <- beta_df %>%
@@ -114,7 +119,7 @@ stats_df <- beta_df %>%
 labels_df <- tibble(
   x = 8.5,
   y = 0,
-  x_info = -2,
+  x_info = -0.5,
   labels = strip_titles,
   labels_info = stats_df$label_info,
   var = c("intercept", v)
@@ -123,42 +128,40 @@ labels_df <- tibble(
 
 
 #### plot ####
-
 beta_df %>%
   mutate(var = factor(var, levels = c("intercept", v))) %>%
-  group_by(var) %>%
+  # group_by(var) %>%
   # summarise(beta = median(beta)) %>%
   # sample_n(200) %>%
   ungroup() %>%
   ggplot(aes(x = beta, colour = var)) +
-  geom_vline(mapping = aes(xintercept = exp(beta), colour = var), alpha = 0.1) +
+  geom_vline(mapping = aes(xintercept = exp(beta), colour = var), alpha = 0.07) +
   geom_vline(xintercept = 3.35, linetype = 2, colour = font_col, size = 1) +
   geom_text(data = labels_df, mapping = aes(x = x, y = y, label = labels, family = ft), colour = font_col) +
-  geom_text(data = labels_df, mapping = aes(x = x_info, y = y, label = labels_info, family = ft), colour = font_col) +
+  geom_text(data = labels_df, mapping = aes(x = x_info, y = y, label = labels_info, family = ft), colour = font_col, size = 8) +
   facet_wrap(~ var, ncol = 8) +
   scale_colour_survivor(25) +
   coord_flip(clip = "off") +
   labs(
-    title = "Which Features Increase Likes per Views for Ads During Superbowl?",
+    title = "Which Content Increases <span style = 'color:#7B2B49'>Likes per View</span> for Ads Featured During the Superbowl?",
     subtitle = subtitle,
     x = "Likes\nper\n1000\nviews",
-    y = "Feature Included in the Ad",
+    y = "Likes / 1000 Views on Youtube",
     caption = "Source: @FiveThrityEight / Graphic: @danoehm"
   ) +
   theme_void() +
   theme(
     text = element_text(family = ft, colour = font_col),
-    plot.title = element_text(family = ftc, face = "bold", size = 24),
-    plot.subtitle = element_text(margin = margin(b = 20, t = 20)),
+    plot.title = element_markdown(family = ftc, size = font_size_high),
+    plot.subtitle = element_text(margin = margin(b = 40, t = 20)),
     panel.spacing = unit(2, "cm"),
-    plot.margin = margin(t = 50, b = 50, l = 50, r = 50),
+    plot.margin = margin(t = 20, b = 20, l = 50, r = 50),
     strip.placement = "bottom",
     strip.text = element_blank(),
     legend.position = "none",
     plot.background = element_rect(fill = bg[3]),
-    axis.title = element_text(),
-    axis.title.y = element_text(margin = margin(r = 20)),
     axis.title.x = element_text(margin = margin(t = 20)),
+    axis.title.y = element_blank(),
     plot.caption = element_text()
   ) +
   ggsave(glue("./2021/week-10/plots/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} superbowl.png"), height = 8, width = 16)
@@ -172,14 +175,7 @@ beta_df %>%
 
 
 
-
-
-
-
-
-
-
-
+#### dev space ####
 #### plot ####
 df$youtube %>%
   ggplot(aes(x = log(view_count), y = log(like_count), colour = patriotic)) +
