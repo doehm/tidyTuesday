@@ -2,27 +2,13 @@ library(tidyverse)
 library(janitor)
 library(glue)
 library(survivoR) # devtools::install_github("doehm/survivoR")
+library(evoPalette) # devtools::install_github("doehm/evoPalette")
 library(rstanarm)
 library(snakecase)
 library(lubridate)
 library(ggtext)
 library(extrafont)
 extrafont::loadfonts(quiet = TRUE)
-
-#### helpers ####
-# there's probably a way better way to do this but I couldn't find it
-posterior_sims <- function(object, long = TRUE, ...) {
-  nm <- names(object$coefficients)
-  np <- length(nm)
-  object$stanfit@sim$samples[[1]][1:np] %>%
-    set_names(nm) %>%
-    as_tibble() %>%
-    clean_names() %>%
-    mutate_at(vars(!contains("intercept")), ~.x + intercept) %>%
-    mutate(iter = 1:n()) %>%
-    # slice(100:1000) %>%
-    {if(long) pivot_longer(., cols = -iter, names_to = "var", values_to = "beta") else .}
-}
 
 
 #### data ####
@@ -48,23 +34,10 @@ mod <- stan_glm(
   data = dfxx
 )
 
-mod_views <- stan_glm(
-  log_views ~ funny + show_product_quickly + patriotic + celebrity + danger + animals + use_sex,
-  iter = 2000,
-  warmup = 1000,
-  data = dfxx
-)
-
-beta_df <- posterior_sims(mod)
-beta_df_view <- posterior_sims(mod_views)
-
-# beta_df <- beta_df %>%
-#   mutate(model = "lpv") %>%
-#   bind_rows(
-#     beta_df_view %>%
-#       mutate(model = "views")
-#     )
-
+beta_df <- as_tibble(mod) %>%
+  clean_names() %>%
+  select(-sigma) %>%
+  pivot_longer(cols = everything(), names_to = "var", values_to = "beta")
 
 
 #### fonts ####
@@ -82,7 +55,7 @@ bg <- colorRampPalette(c("black", sp[4]))(8)
 show_palette(sp)
 
 #### titles ####
-wd <- 80
+wd <- 180
 title <- str_wrap("Median Weekly Earnings", wd/3)
 subtitle1 <- str_wrap("
   Superbowl ads that feature celebrities typically see an increase of 2.1 likes per 1000 views on Youtube.
@@ -98,10 +71,10 @@ strip_titles <- str_wrap(to_title_case(c("intercept", v)), 10)
 
 stats_df <- beta_df %>%
   group_by(var) %>%
-  summarise(
-    q10 = exp(quantile(beta, 0.1)) - 3.3,
-    median = exp(median(beta)) - 3.3,
-    q90 = exp(quantile(beta, 0.9)) - 3.3
+  summarise(median = median(beta)) %>%
+  mutate(
+    intercept = 1.22,
+    exp_median = ifelse(var == "intercept", exp(intercept), exp(median + intercept) - exp(intercept))
     ) %>%
   mutate_if(is.numeric, ~round(.x, 1)) %>%
   mutate(
@@ -111,7 +84,7 @@ stats_df <- beta_df %>%
       median < 0 ~ "",
       TRUE ~ "+"
       ),
-    label_info = glue("{op}{median}")
+    label_info = glue("{op}{exp_median}")
   ) %>%
   mutate(var = factor(var, levels = c("intercept", v))) %>%
   arrange(var)
@@ -278,3 +251,9 @@ map2_dfr(vu$v, vu$u, ~{
   ) +
   scale_fill_gradient(low = c1, high = c2)
 
+
+log(y) ~ b0 + b1x
+y = exp(b0 + b1)
+
+1.7 = 1.2 + 0.5
+exp(1.7) = exp(1.2)*exp(0.5)
