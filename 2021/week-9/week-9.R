@@ -3,6 +3,7 @@ library(janitor)
 library(glue)
 library(survivoR) # devtools::install_github("doehm/survivoR")
 library(extrafont)
+library(lubridate)
 extrafont::loadfonts(quiet = TRUE)
 
 #### helpers ####
@@ -14,18 +15,18 @@ save_k <- function(loc, filename, format = "png") {
 
 #### data ####
 df <- tidytuesdayR::tt_load(2021, week = 9)
-
 earn <- df$earn
 
 #### fonts ####
 # ftc <- "Gill Sans Nova Cond"
 # ft <- "Gill Sans Nova"
-ftc <- "Verdana Pro Cond Black"
-ft <- "Verdana Pro Cond Light"
-
+# ftc <- "Verdana Pro Cond Black"
+# ft <- "Verdana Pro Cond Light"
+ftc <- "Sarabun ExtraBold"
+ft <- "Sarabun ExtraLight"
 
 #### palette ####
-season <- 10
+season <- 13
 sp <- season_palettes$palette[[season]]
 col1 <- "#ccd5ae" # neutral colour  faedcd ccd5ae
 col2 <- sp[1]
