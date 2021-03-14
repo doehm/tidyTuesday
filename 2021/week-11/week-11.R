@@ -9,6 +9,7 @@ library(lubridate)
 library(ggtext)
 library(extrafont)
 library(cowplot)
+library(magick)
 extrafont::loadfonts(quiet = TRUE)
 
 #### helpers ####
@@ -141,8 +142,7 @@ subtitle2 <- str_wrap(
   wd
 )
 subtitle3 <- str_wrap(
-  "The bar below the text represents the credible interval at 80%, 90%, 95% estimated by a Bayesian GLM using
-  rstanarm::stan_glm. Positive values mean that genre is more likely to achieve a rating of 3, and negative
+  "The bar below the text represents the credible interval at 80%, 90% and 95%. Positive values mean that genre is more likely to achieve a rating of 3, and negative
   values less likely",
   wd
 )
@@ -152,15 +152,15 @@ df_top_act %>%
   geom_text(mapping = aes(x = -1, y = 2, label = toupper(to_title_case(genre))), hjust = 0, size = 14, fontface = "italic", alpha = 0.04, family = ftb) +
   geom_text(mapping = aes(x = x + 0.25, y = y, label = actors), hjust = 1, family = ft, fontface = "italic") +
   geom_text(mapping = aes(x = 0*n3 + 0.45, y = y, label = n3), hjust = 1, family = ftc, fontface = "italic", size = 6) +
-  geom_rect(mapping = aes(xmin = -1, xmax = 0.5, ymin = -1, ymax = 0), colour = "grey60", fill = NA) +
-  geom_rect(mapping = aes(xmin = q025, xmax = q975, ymin = -1, ymax = 0, fill = q50), data = df_ints, alpha = 0.2) +
-  geom_rect(mapping = aes(xmin = q05, xmax = q95, ymin = -1, ymax = 0, fill = q50), data = df_ints, alpha = 0.2) +
-  geom_rect(mapping = aes(xmin = q10, xmax = q90, ymin = -1, ymax = 0, fill = q50), data = df_ints, alpha = 0.2) +
-  geom_segment(aes(x = -0.296, xend = -0.296, y = -1, yend = 0), linetype = 2) +
+  geom_rect(mapping = aes(xmin = -1, xmax = 0.5, ymin = -1.5, ymax = 0), colour = "grey60", fill = NA) +
+  geom_rect(mapping = aes(xmin = q025, xmax = q975, ymin = -1.5, ymax = 0, fill = q50), data = df_ints, alpha = 0.3) +
+  geom_rect(mapping = aes(xmin = q05, xmax = q95, ymin = -1.5, ymax = 0, fill = q50), data = df_ints, alpha = 0.3) +
+  geom_rect(mapping = aes(xmin = q10, xmax = q90, ymin = -1.5, ymax = 0, fill = q50), data = df_ints, alpha = 0.4) +
+  geom_segment(aes(x = -0.296, xend = -0.296, y = -1.5, yend = 0), linetype = 2) +
   geom_text(aes(x = q50, y = -2, label = round(beta, 1)), data = df_ints, fontface = "italic") +
   facet_wrap(~ genre, ncol = 2) +
   labs(
-    title = "BECHDEL RATINGS",
+    title = "BECHDEL TEST",
     subtitle = subtitle,
     caption = "Data: @FiveThirtyEight / Graphic: @danoehm"
   ) +
@@ -185,32 +185,6 @@ df_top_act %>%
 
 #### extra ###
 #### bond ####
-df %>%
-  filter(str_detect(tolower(plot), "bond")) %>%
-  select(title, plot)
-
-tt$movies %>%
-  left_join(tt$raw_bechdel, by = c("imdb_id", "year", "title")) %>%
-  mutate(
-    total_gross = as.numeric(domgross) + as.numeric(intgross),
-    profit = total_gross - budget
-    ) %>%
-  select(year, rating, imdb_rating, budget, total_gross, profit, binary) -> df
-
-  ggplot(aes(x = rating, y = rated, fill = n)) +
-  geom_tile(width = 0.8, height = 0.8) +
-  theme_void() +
-  theme(
-    axis.text = element_text()
-  ) +
-  scale_fill_gradientn(colours = c("red", "white", "blue"))
-
-
-df <- tibble(x = sample(letters[1:4], 20, TRUE))
-df %>%
-  count(x) %>%
-  arrange(desc(n))
-
 bond_movies <- c(
   "casino royal",
   "quantum",
@@ -237,9 +211,58 @@ bond_movies <- c(
   "dr. no"
 )
 
-df %>%
+df_bond <- tt$raw_bechdel %>%
   filter(str_detect(tolower(title), paste0(bond_movies, collapse = "|"))) %>%
-  select(title, rating, binary)
+  filter(!(year == 1967 & title == "Casino Royale")) %>%
+  select(title, rating, year) %>%
+  arrange(desc(rating)) %>%
+  group_by(rating) %>%
+  mutate(
+    label = str_wrap(paste0(title, " (", year, ")"), 22),
+    x = 3 - rating,
+    y = 1:n() - n()
+    )
+
+#### bond plot ####
+ht <- 5
+bond <- image_read("C:/Users/Dan/Pictures/tidy-tuesday/week-11/bond-gun-barrel.jpg")
+g_rect <-ggplot() +
+  geom_rect(aes(xmin = 0, xmax = 3, ymin = 0, ymax = 11), fill = "black", alpha = 0.4) +
+  theme_void()
+  # coord_cartesian(clip = "off")
+g_bg <- ggplot() +
+  # geom_rect(aes(xmin = 0, xmax = 3, ymin = 0, ymax = 11), fill = "white", alpha = 0.4) +
+  geom_text(data = df_bond, mapping = aes(x = 1, y = y, label = label), fontface = "italic", family = ftc, hjust = 1, size = 2.5, colour = "white", lineheight = 0.8) +
+  facet_wrap(~ rating, ncol = 3) +
+  theme_void() +
+  labs(
+    title = "The Name's Bond ... James Bond",
+    subtitle = "Bond films and their Bechdel ratings"
+  ) +
+  theme(
+    text = element_text(colour = "white"),
+    plot.title = element_text(family = ftc, face = "italic", size = 24, hjust = 0.5, margin = margin(b = 10, t = 10)),
+    plot.subtitle = element_text(family = ftc, face = "italic", size = 16, hjust = 0.5, margin = margin(b = 20, t = 10)),
+    plot.margin = margin(l = 60, r = 20, b = 20),
+    strip.text = element_text(family = ftc, face = "italic", size = 18, colour = "white")
+  ) +
+  coord_cartesian(clip = "off", xlim = c(-2, 3))
+  # ggsave(glue("./2021/week-11/bond/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} bond.png"), height = ht, width = ht*1.5)
+
+ggdraw() +
+  draw_image(bond) +
+  draw_plot(g_rect, x = -0.2, y = -0.2, width = 1.5, height = 1.5) +
+  draw_plot(g_bg) +
+  ggsave(glue("./2021/week-11/bond/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} bond.png"), height = ht, width = ht*1.5)
+
+
+
+#### van damme, shwarzenegger, willis ####
+
+
+tt$raw_bechdel %>%
+  filter(str_detect(tolower(title), "john wick")) %>%
+  select(title, rating)
 
 df %>%
   mutate(actors = str_split(actors, ",")) %>%
