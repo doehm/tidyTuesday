@@ -185,74 +185,103 @@ df_top_act %>%
 
 #### extra ###
 #### bond ####
-bond_movies <- c(
-  "casino royal",
-  "quantum",
-  "skyfall",
-  "die another day",
-  "world is not enough",
-  "tomorrow never",
-  "goldeneye",
-  "licence to kill",
-  "the living day",
-  "a view to a kill",
-  "octopussy",
-  "for your eyes only",
-  "moonraker",
-  "the spy who loved me",
-  "the man with the golden done",
-  "live and let die",
-  "diamonds are forever",
-  "on her majesty",
-  "you only live twice",
-  "thunderball",
-  "goldfinger",
-  "from russia with love",
-  "dr. no"
+bond_movies <- tribble(
+  ~title, ~actor,
+  "casino royale", "Daniel Craig",
+  "quantum of solace", "Daniel Craig",
+  "skyfall", "Daniel Craig",
+  "die another day", "Pierce Brosnon",
+  "the world is not enough", "Pierce Brosnon",
+  "tomorrow never dies", "Pierce Brosnon",
+  "goldeneye", "Pierce Brosnon",
+  "licence to kill", "Tim Dalton",
+  "the living daylights", "Tim Dalton",
+  "a view to a kill", "Roger Moore",
+  "octopussy", "Roger Moore",
+  "for your eyes only", "Roger Moore",
+  "moonraker", "Roger Moore",
+  "the spy who loved me", "Roger Moore",
+  "the man with the golden gun", "Roger Moore",
+  "live and let die", "Roger Moore",
+  "diamonds are forever", "Sean Connery",
+  "on her majesty’s secret service", "George Lazenby",
+  "you only live twice", "Sean Connery",
+  "thunderball", "Sean Connery",
+  "goldfinger", "Sean Connery",
+  "from russia with love", "Sean Connery",
+  "dr. no", "Sean Connery"
 )
 
+bond_cols <- colorRampPalette(c("gold4", "grey60", "red4"))(6)
+show_palette(bond_cols)
+
 df_bond <- tt$raw_bechdel %>%
-  filter(str_detect(tolower(title), paste0(bond_movies, collapse = "|"))) %>%
+  mutate(title = tolower(title)) %>% # filter(str_detect(title, "living day"))
+  inner_join(bond_movies, by = "title") %>%
+  mutate(title = to_title_case(title)) %>%
+  mutate(title = str_replace(title, "Majesty s", "Majesty's")) %>%
   filter(!(year == 1967 & title == "Casino Royale")) %>%
-  select(title, rating, year) %>%
   arrange(desc(rating)) %>%
   group_by(rating) %>%
   mutate(
     label = str_wrap(paste0(title, " (", year, ")"), 22),
     x = 3 - rating,
     y = 1:n() - n()
+    ) %>%
+  ungroup()
+
+df_actor <- df_bond %>%
+  count(actor) %>%
+  mutate(
+    x = sort(rep(1:3, 2)),
+    y = rep(c(-13, -14), 3)
     )
 
-#### bond plot ####
+  #### bond plot ####
 ht <- 5
 bond <- image_read("C:/Users/Dan/Pictures/tidy-tuesday/week-11/bond-gun-barrel.jpg")
 g_rect <-ggplot() +
-  geom_rect(aes(xmin = 0, xmax = 3, ymin = 0, ymax = 11), fill = "black", alpha = 0.4) +
+  geom_rect(aes(xmin = 0, xmax = 3, ymin = 0, ymax = 11), fill = "black", alpha = 0.7) +
   theme_void()
   # coord_cartesian(clip = "off")
+g_legend <- ggplot() +
+  geom_text(data = df_actor, mapping = aes(x = x, y = y, label = actor, colour = actor), family = ftb, fontface = "italic", size = 2.5) +
+  theme_void() +
+  scale_colour_manual(values = bond_cols) +
+  theme(
+    legend.position = "none",
+    plot.margin = margin(t = 20, b = 20, l = 20, r = 20)
+  ) +
+  coord_cartesian(clip = "off")
 g_bg <- ggplot() +
-  # geom_rect(aes(xmin = 0, xmax = 3, ymin = 0, ymax = 11), fill = "white", alpha = 0.4) +
-  geom_text(data = df_bond, mapping = aes(x = 1, y = y, label = label), fontface = "italic", family = ftc, hjust = 1, size = 2.5, colour = "white", lineheight = 0.8) +
+  geom_text(data = df_bond, mapping = aes(x = 1, y = y, label = label, colour = actor), fontface = "italic", family = ftb, hjust = 1, size = 2.5, lineheight = 0.8) +
   facet_wrap(~ rating, ncol = 3) +
   theme_void() +
   labs(
-    title = "The Name's Bond ... James Bond",
-    subtitle = "Bond films and their Bechdel ratings"
+    title = "Bond. James Bond.",
+    subtitle = "Bond films and their Bechdel ratings",
+    colour = "Actor",
+    caption = "Data: @FiveThirtEight / Graphic: @danoehm"
   ) +
+  scale_colour_manual(values = bond_cols) +
+  scale_fill_manual(values = bond_cols) +
   theme(
     text = element_text(colour = "white"),
-    plot.title = element_text(family = ftc, face = "italic", size = 24, hjust = 0.5, margin = margin(b = 10, t = 10)),
-    plot.subtitle = element_text(family = ftc, face = "italic", size = 16, hjust = 0.5, margin = margin(b = 20, t = 10)),
-    plot.margin = margin(l = 60, r = 20, b = 20),
-    strip.text = element_text(family = ftc, face = "italic", size = 18, colour = "white")
+    plot.title = element_text(family = ftb, face = "italic", size = 24, hjust = 0.5, margin = margin(b = 10, t = 10)),
+    plot.subtitle = element_text(family = ftb, face = "italic", size = 16, hjust = 0.5, margin = margin(b = 20, t = 10)),
+    plot.margin = margin(l = 60, r = 20, b = 50),
+    strip.text = element_text(family = ftb, face = "italic", size = 18, colour = "white"),
+    legend.position = "none",
+    plot.caption = element_text(family = ftb, size = 6)
   ) +
   coord_cartesian(clip = "off", xlim = c(-2, 3))
   # ggsave(glue("./2021/week-11/bond/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} bond.png"), height = ht, width = ht*1.5)
 
-ggdraw() +
+ggdraw(clip = "off") +
   draw_image(bond) +
   draw_plot(g_rect, x = -0.2, y = -0.2, width = 1.5, height = 1.5) +
   draw_plot(g_bg) +
+  draw_plot(g_legend, x = 0.3, y = -0.01, width = 0.4, height = 0.15) +
   ggsave(glue("./2021/week-11/bond/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} bond.png"), height = ht, width = ht*1.5)
 
 
