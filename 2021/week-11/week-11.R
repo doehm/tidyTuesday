@@ -225,6 +225,12 @@ df_bond <- tt$raw_bechdel %>%
   group_by(rating) %>%
   mutate(
     label = str_wrap(paste0(title, " (", year, ")"), 22),
+    rating_lab = case_when(
+      rating == 1 ~ "(1) at least two women",
+      rating == 2 ~ "(2) who talk",
+      rating == 3 ~ "(3) about something other than a man"
+    ),
+    rating_lab = str_wrap(rating_lab, 20),
     x = 3 - rating,
     y = 1:n() - n()
     ) %>%
@@ -255,13 +261,13 @@ g_legend <- ggplot() +
   coord_cartesian(clip = "off")
 g_bg <- ggplot() +
   geom_text(data = df_bond, mapping = aes(x = 1, y = y, label = label, colour = actor), fontface = "italic", family = ftb, hjust = 1, size = 2.5, lineheight = 0.8) +
-  facet_wrap(~ rating, ncol = 3) +
+  facet_wrap(~ rating_lab, ncol = 3) +
   theme_void() +
   labs(
     title = "Bond. James Bond.",
     subtitle = "Bond films and their Bechdel ratings",
     colour = "Actor",
-    caption = "Data: @FiveThirtEight / Graphic: @danoehm"
+    caption = "Data: @FiveThirytEight / Graphic: @danoehm"
   ) +
   scale_colour_manual(values = bond_cols) +
   scale_fill_manual(values = bond_cols) +
@@ -269,10 +275,10 @@ g_bg <- ggplot() +
     text = element_text(colour = "white"),
     plot.title = element_text(family = ftb, face = "italic", size = 24, hjust = 0.5, margin = margin(b = 10, t = 10)),
     plot.subtitle = element_text(family = ftb, face = "italic", size = 16, hjust = 0.5, margin = margin(b = 20, t = 10)),
-    plot.margin = margin(l = 60, r = 20, b = 50),
-    strip.text = element_text(family = ftb, face = "italic", size = 18, colour = "white"),
+    plot.margin = margin(l = 60, r = 20, b = 5),
+    strip.text = element_text(family = ftb, face = "italic", size = 10, colour = "white"),
     legend.position = "none",
-    plot.caption = element_text(family = ftb, size = 6)
+    plot.caption = element_text(family = ftb, size = 4, hjust = 0, margin = margin(t = 50), colour = "grey50")
   ) +
   coord_cartesian(clip = "off", xlim = c(-2, 3))
   # ggsave(glue("./2021/week-11/bond/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} bond.png"), height = ht, width = ht*1.5)
