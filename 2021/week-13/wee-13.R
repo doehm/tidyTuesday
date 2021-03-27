@@ -90,14 +90,19 @@ df_corr <- df_grid %>%
   bind_cols(tibble(corr = round(correlations, 2))) %>%
   mutate(
     label = ifelse(corr > 0, paste0("+", corr), corr),
-    country = fct_reorder(str_wrap(country, 10), corr, mean, na.rm = TRUE)
-    # issue = str_wrap(issue, 15)
+    country = fct_reorder(str_wrap(country, 10), corr, mean, na.rm = TRUE),
+    issue = str_wrap(issue, 20)
     )
 
 #### colours ####
 bg <- "#555b6e"
 high <- "#89b0ae"
 low <- "#e56b6f"
+text1 <- "#FFD6BA"
+text2 <- "#22223b"
+text3 <- "#14213d"
+text2 <- "grey20"
+text3 <- "grey10"
 
 #### fonts ####
 ftbl <- "Segoe UI Black"
@@ -118,7 +123,7 @@ df_corr %>%
   coord_polar(theta = "y", start = -pi) +
   xlim(c(0, 2)) +
   ylim(c(-1,1)) +
-  geom_text(aes(x = 0, y = 0, label = label), size=3) +
+  geom_text(aes(x = 0, y = 0, label = label), size = 2.5, family = ftl, colour = text3) +
   # geom_text(aes(x=1, y=2, label=title), size=4.2) +
   facet_grid(issue ~ country) +
   theme_void() +
@@ -128,19 +133,24 @@ df_corr %>%
   theme(
     plot.background = element_rect(fill = bg),
     strip.background = element_blank(),
-    strip.text.x = element_text(family  = ftl, face = "bold"),
-    strip.text.y = element_text(hjust = -10, vjust = 0, family  = ftl, face = "bold"),
+    # strip.text.x = element_text(family  = ftl, face = "italic", size = 10, colour = text3),
+    # strip.text.y = element_text(hjust = 1, vjust = 0.5, family  = ftbl, face = "italic", size = 18, colour = text3, margin = margin(r = 10)),
+    strip.text.x = element_text(family  = ftl, face = "italic", size = 10, colour = text3),
+    strip.text.y = element_text(hjust = 0, vjust = 0.5, family  = ftl, face = "italic", size = 10, colour = text3, margin = margin(r = 10)),
+    strip.placement = "left",
     panel.spacing.y = unit(0.8, "cm"),
-    plot.title = element_text(family = ftbl, size = 20),
-    plot.subtitle = element_text(family = ftl, size = 12)
+    plot.title = element_text(family = ftbl, size = 24, face = "italic", margin = margin(b = 20), colour = text3),
+    plot.subtitle = element_text(family = ftl, size = 12, margin = margin(b = 20), colour = text3),
+    plot.margin = margin(t = 20, b = 20, l = 20, r = 20),
+    legend.position = "none"
     ) +
   labs(
     title = "U.S. Voting Patterns with Members of the G20",
     subtitle = st
   ) +
-  guides(fill=FALSE) +
-  guides(colour=FALSE) +
-  ggsave(glue("./2021/week-13/plots/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} un-votes.png"), height = 10, width = 16)
+  # guides(fill = FALSE) +
+  # guides(colour = FALSE) +
+  ggsave(glue("./2021/week-13/plots/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} un-votes.png"), height = 8, width = 16)
 
 
 
