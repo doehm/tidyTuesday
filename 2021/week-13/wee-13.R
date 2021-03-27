@@ -2,12 +2,10 @@
 library(tidyverse)
 library(janitor)
 library(glue)
-library(evoPalette) # devtools::install_github("doehm/evoPalette")
 library(snakecase)
 library(lubridate)
 library(extrafont)
 library(cowplot)
-library(magick)
 library(ggforce)
 library(unvotes)
 extrafont::loadfonts(quiet = TRUE)
@@ -16,45 +14,8 @@ extrafont::loadfonts(quiet = TRUE)
 tt <- tidytuesdayR::tt_load(2021, week = 13)
 tt
 
-un_votes
-un_roll_calls
-un_roll_call_issues
-
-un_votes %>%
-  count(country, vote) %>%
-  group_by(country) %>%
-  mutate(p = n/sum(n)) %>%
-  pivot_wider(id_cols = country, names_from = vote, values_from = p) %>%
-  ggplot(aes(x = yes, y = no)) +
-  geom_point()
-
-df_rcid_year <- un_roll_calls%>%
-  mutate(year = year(date)) %>%
-  count(rcid, year)
-
-df_votes <- un_votes %>%
-  # filter(country %in% c("United States", "Russia", "China")) %>%
-  group_by(rcid) %>%
-  summarise(
-    n_countries = n_distinct(country),
-    yes = sum(vote == "yes"),
-    no = sum(vote == "no"),
-    abstain = sum(vote == "abstain"),
-    p_yes = mean(vote == "yes"),
-    p_no = mean(vote == "no"),
-    p_abstain = mean(vote == "abstain")
-  ) %>%
-  left_join(df_rcid_year, by = "rcid") %>%
-  left_join(un_roll_call_issues, by = "rcid") %>%
-  filter(!is.na(issue))
-
-df_votes %>%
-  ggplot(aes(x = year, y = p_yes, colour = issue)) +
-  geom_point() +
-  geom_smooth() +
-  facet_wrap(~ issue)
-
 #### G20 ####
+# leaving the EU out because I couldn't be bothered grouping them - soz
 g20 <- c(
   "Argentina", "Australia", "Brazil", "Canada", "China", "France", "Germany", "India", "Indonesia",
   "Italy", "Japan", "South Korea", "Mexico", "Russia", "Saudi Arabia", "South Africa", "Turkey",
@@ -83,15 +44,14 @@ for(k in 1:nrow(df_grid)){
 
 }
 
-
-
 df_corr <- df_grid %>%
   as_tibble() %>%
   bind_cols(tibble(corr = round(correlations, 2))) %>%
   mutate(
     label = ifelse(corr > 0, paste0("+", corr), corr),
-    country = fct_reorder(str_wrap(country, 10), corr, mean, na.rm = TRUE),
-    issue = str_wrap(issue, 20)
+    country = fct_reorder(str_wrap(country, 10), corr, mean, na.rm = TRUE, .desc = TRUE),
+    issue = str_wrap(issue, 10, ),
+    issue = fct_reorder(issue, corr, mean, na.rm = TRUE)
     )
 
 #### colours ####
@@ -110,52 +70,43 @@ ftsb <- "Segoe UI Semibold"
 ftl <- "Segoe UI Light"
 
 #### text ####
-st1 <- "The G20 is the international forum that brings together the world's major economies. Its members account for more than 80 percent of world GDP, 75 percent of global trade and 60 percent of the population of the planet.
-The forum has met every year since 1999 and since 2008 has included a yearly Leaders' Summit, with the participation of the respective Heads of State and Government."
-st <- paste(st1)
-subtitle <- str_wrap(st, 120)
+st1 <- "The G20 is the international forum that brings together the world's major economies. Its members account for more than 80 percent of world GDP, 75 percent of global trade and 60 percent of the population of the planet."
+st2 <- "The correlation of voting direction between the United States and other 19 members of
+the G20 shows the United States tend to vote similarly the countries on the top of the chart,
+such as the UK and Canada, and differently to those on the bottom, such as Russia and China."
+st <- str_wrap(paste(st1, st2), 80)
 
 df_corr %>%
   ggplot(aes(fill = corr, ymax = corr, ymin = 0, xmax = 2, xmin = 1)) +
-  # geom_rect(aes(ymax=1, ymin=-1, xmax=2, xmin=1), fill = NA, colour = "grey50") + #"#ece8bd"
   geom_rect() +
-  # coord_polar(theta = "y",start = -pi/2) +
-  coord_polar(theta = "y", start = -pi) +
+  coord_polar(theta = "y", start = -pi, clip = "off") +
   xlim(c(0, 2)) +
   ylim(c(-1,1)) +
-  geom_text(aes(x = 0, y = 0, label = label), size = 2.5, family = ftl, colour = text3) +
-  # geom_text(aes(x=1, y=2, label=title), size=4.2) +
-  facet_grid(issue ~ country) +
+  geom_text(aes(x = 0, y = 0, label = label), size = 3.5, family = ftl, colour = text3) +
+  facet_grid(country ~ issue) +
   theme_void() +
-  # scale_fill_manual(values = c("red"="#C9146C", "orange"="#DA9112", "green"="#129188")) +
-  # scale_colour_manual(values = c("red"="#C9146C", "orange"="#DA9112", "green"="#129188")) +
   scale_fill_gradient2(low = low, high = high) +
   theme(
     plot.background = element_rect(fill = bg),
     strip.background = element_blank(),
-    # strip.text.x = element_text(family  = ftl, face = "italic", size = 10, colour = text3),
-    # strip.text.y = element_text(hjust = 1, vjust = 0.5, family  = ftbl, face = "italic", size = 18, colour = text3, margin = margin(r = 10)),
-    strip.text.x = element_text(family  = ftl, face = "italic", size = 10, colour = text3),
-    strip.text.y = element_text(hjust = 0, vjust = 0.5, family  = ftl, face = "italic", size = 10, colour = text3, margin = margin(r = 10)),
+    strip.text.x = element_text(family  = ftsb, face = "italic", size = 9, colour = text3),
+    strip.text.y = element_text(hjust = 0, vjust = 0.5, family  = ftsb, face = "italic", size = 10, colour = text3, margin = margin(r = 10)),
     strip.placement = "left",
-    panel.spacing.y = unit(0.8, "cm"),
-    plot.title = element_text(family = ftbl, size = 24, face = "italic", margin = margin(b = 20), colour = text3),
+    panel.spacing.x = unit(0.6, "cm"),
+    panel.spacing.y = unit(-0.5, "cm"),
+    plot.title = element_text(family = ftbl, size = 32, face = "italic", margin = margin(b = 20), colour = text3),
     plot.subtitle = element_text(family = ftl, size = 12, margin = margin(b = 20), colour = text3),
+    plot.caption = element_text(family = ftl, face = "italic", hjust = 0.5),
     plot.margin = margin(t = 20, b = 20, l = 20, r = 20),
     legend.position = "none"
     ) +
   labs(
-    title = "U.S. Voting Patterns with Members of the G20",
-    subtitle = st
+    title = str_wrap("U.S. Voting Patterns with Members of the G20", 25),
+    subtitle = st,
+    caption = "Data: Rstats {unvotes} / Graphic: @danoehm"
   ) +
-  # guides(fill = FALSE) +
-  # guides(colour = FALSE) +
-  ggsave(glue("./2021/week-13/plots/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} un-votes.png"), height = 8, width = 16)
-
-
-
-
-
+  ggsave(glue("./2021/week-13/plots/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} un-votes.png"), height = 13.9, width = 6.9)
+  # ggsave(glue("./2021/week-13/plots/{format(now(), '%Y-%m-%d %Hh-%Mm-%Ss')} un-votes.png"), height = 5.75, width = 14)
 
 #### extra ####
 
@@ -196,33 +147,36 @@ tibble(x = letters[1:3], y = c(0, 1, 0.5)) %>%
 
 
 
-df <- data.frame(matrix(nrow=5, ncol = 2))
+un_votes %>%
+  count(country, vote) %>%
+  group_by(country) %>%
+  mutate(p = n/sum(n)) %>%
+  pivot_wider(id_cols = country, names_from = vote, values_from = p) %>%
+  ggplot(aes(x = yes, y = no)) +
+  geom_point()
 
-names(df) <- c("variable", "percentage")
-df$variable <- c("Carbohydrates", "Warming", "NGTnotPresent", "DrainNotPresent", "DrEaMing")
-df$percentage <- c(0.67,0.33,0.86,0.78,0.58)
+df_rcid_year <- un_roll_calls%>%
+  mutate(year = year(date)) %>%
+  count(rcid, year)
 
-df <- df %>% mutate(group=ifelse(percentage <0.6, "red",
-                                 ifelse(percentage>=0.6 & percentage<0.8, "orange","green")),
-                    label=paste0(percentage*100, "%"),
-                    title=dplyr::recode(variable, `Carbohydrates`="Preoperative\ncarbohydrate loading",
-                                        `Warming`="Intraoperative\nwarming",
-                                        `NGTnotPresent`="Patients without a\nnasogastric tube\non arrival in recovery",
-                                        `DrainNotPresent`="Patients without an\nabdominal drain\non arrival in recovery",
-                                        `DrEaMing`="Patients DrEaMing on\npostoperative day 1")) %>%
-  mutate(percentage = 2*percentage - 1)
-ggplot(df, aes(fill = group, ymax = percentage, ymin = 0, xmax = 2, xmin = 1)) +
-  geom_rect(aes(ymax=1, ymin=-1, xmax=2, xmin=1), fill = NA, colour = "grey50") + #"#ece8bd"
-  geom_rect() +
-  coord_polar(theta = "y",start=-pi/2) +
-  xlim(c(0, 2)) + ylim(c(-1,3)) +
-  geom_text(aes(x = 0, y = 0, label = label, colour=group), size=6.5) +
-  geom_text(aes(x=1, y=2, label=title), size=4.2) +
-  facet_wrap(~title, ncol = 5) +
-  theme_void() +
-  scale_fill_manual(values = c("red"="#C9146C", "orange"="#DA9112", "green"="#129188")) +
-  scale_colour_manual(values = c("red"="#C9146C", "orange"="#DA9112", "green"="#129188")) +
-  theme(strip.background = element_blank(),
-        strip.text.x = element_blank()) +
-  guides(fill=FALSE) +
-  guides(colour=FALSE)
+df_votes <- un_votes %>%
+  # filter(country %in% c("United States", "Russia", "China")) %>%
+  group_by(rcid) %>%
+  summarise(
+    n_countries = n_distinct(country),
+    yes = sum(vote == "yes"),
+    no = sum(vote == "no"),
+    abstain = sum(vote == "abstain"),
+    p_yes = mean(vote == "yes"),
+    p_no = mean(vote == "no"),
+    p_abstain = mean(vote == "abstain")
+  ) %>%
+  left_join(df_rcid_year, by = "rcid") %>%
+  left_join(un_roll_call_issues, by = "rcid") %>%
+  filter(!is.na(issue))
+
+df_votes %>%
+  ggplot(aes(x = year, y = p_yes, colour = issue)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ issue)
