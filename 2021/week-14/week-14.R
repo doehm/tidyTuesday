@@ -85,11 +85,14 @@ make_palette <- function(.brand, n = 6, a = 0,  hex = FALSE) {
 #### plot ####
 main <- df %>%
   ggplot(aes(x = huec, y = lightc)) +
+  geom_hline(yintercept = 13, colour = "grey10", linetype = 2) +
+  geom_vline(xintercept = 14, colour = "grey10", linetype = 2) +
   geom_rect(aes(xmin = huec, xmax = huec_end, ymin = lightc, ymax = lightc_end), fill = "white", colour = font) +
   geom_text(data = df, mapping = aes(huec+b, lightc+b, label = id), family = ft, size = 8, colour = font) +
   geom_text(aes(x = 21, y = 21, label = str_wrap("High variation in hue and lightness", 20)), family = ftc, size = 5, lineheight = 0.8) +
   geom_text(aes(x = 21, y = 6, label = str_wrap("High variation in hue", 20)), family = ftc, size = 5, lineheight = 0.8) +
   geom_text(aes(x = 5, y = 21, label = str_wrap("High variation in lightness", 20)), family = ftc, size = 5, lineheight = 0.8) +
+  geom_text(aes(x = 5, y = 6, label = str_wrap("Low variation in hue and lightness", 20)), family = ftc, size = 5, lineheight = 0.8) +
   # geom_rect(data = cl$data, mapping = aes(xmin = x, xmax = xend, ymin = 15, ymax = 15.9), fill = cl$pal) +
   # geom_text(data = n, mapping = aes(27.5, 15+b, label = "Clinique"), family = ft, size = 8, colour = font, hjust = 1) +
   # scale_fill_gradientn(colours = pals[[1]]) +
@@ -99,9 +102,9 @@ main <- df %>%
     plot.title = element_text(family = ft, size = 36),
     plot.background = element_rect(fill = bg, colour = NA),
     # axis.text = element_text(size = 16),
-    axis.title = element_text(size = 22),
+    # axis.title = element_text(size = 22),
     plot.margin = margin(t = 30,  b = 30, l = 30, r = 30),
-    axis.title.y = element_text(angle = 90)
+    # axis.title.y = element_text(angle = 90)
   ) +
   labs(
     x = "variation in Hue",
