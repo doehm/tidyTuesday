@@ -7,8 +7,9 @@ library(lubridate)
 library(extrafont)
 library(cowplot)
 library(ggforce)
-library(ggfx)
 extrafont::loadfonts(quiet = TRUE)
+
+font_import("")
 
 #### data ####
 tt <- tidytuesdayR::tt_load(2021, week = 14)
@@ -48,11 +49,11 @@ df <- tt$allShades %>%
 n <- df %>%
   count(huec, lightc)
 
-x <- tt$allShades %>%
-  filter(hue < 50) %>%
-  filter(brand == "Maybelline")
-
-kmeans(x[,c("hue", "sat", "lightness")], 6)$centers
+# x <- tt$allShades %>%
+#   filter(hue < 50) %>%
+#   filter(brand == "Maybelline")
+#
+# kmeans(x[,c("hue", "sat", "lightness")], 6)$centers
 
 #### colours ####
 bg <- "white"
