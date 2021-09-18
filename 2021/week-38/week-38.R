@@ -2,11 +2,13 @@
 # week 37 -----------------------------------------------------------------
 
 library(tidyverse)
-# library(extrafont)
+library(glue)
 library(ggtext)
 library(patchwork)
 library(showtext)
 library(cowplot)
+library(ggimage)
+library(magick)
 # extrafont::loadfonts(quiet = TRUE)
 
 # data --------------------------------------------------------------------
@@ -66,43 +68,7 @@ metal_df |>
 
 # plot function -----------------------------------------------------------
 
-plot_metal_subgenre <- function(subgenre) {
 
-  bands <- metal_df |>
-    filter(metal_genre == subgenre) |>
-    count(performer) |>
-    arrange(desc(n))
-
-  metal_df |>
-    ggplot(aes(x = loudness, y = energy)) +
-    geom_point(colour = mass, size = 2) +
-    geom_segment(aes(x = loudness, xend = loudness, y = energy - valence/2, yend = energy + valence/2), colour = mass) +
-    geom_point(data = filter(metal_df, metal_genre == subgenre), colour = accent, size = 3) +
-    geom_segment(
-      aes(x = loudness, xend = loudness, y = energy - valence/2, yend = energy + valence/2),
-      filter(metal_df, metal_genre == subgenre),
-      colour = accent,
-      lwd = 1
-    ) +
-    theme_void() +
-    theme(
-      plot.background = element_rect(fill = bg),
-      text = element_text(colour = font),
-      plot.title = element_text(family = ft, hjust = 0.5)
-    ) |>
-    labs(
-      title = toupper(subgenre)
-    )
-
-  # plot +
-  #   ggsave("./2021/week-38/metal.svg", height = 12, width = 24)
-
-  # list(
-  #   bands = bands,
-  #   plot = plot
-  # )
-
-}
 
 # palettes ----------------------------------------------------------------
 
@@ -118,7 +84,8 @@ ft <- "Metal Mania"
 
 images <- list(
   thrash = "2021/week-38/metallica.jpg",
-  nu = "2021/week-38/korn1.jpg"
+  nu = "2021/week-38/korn1.jpg",
+  groove = "2021/week-38/dimebag1.jpg"
 )
 
 # plots -------------------------------------------------------------------
@@ -135,34 +102,49 @@ subgenre <- "nu metal"
 
 fn <- function(subgenre) {
 
-
   plot <- metal_df |>
     ggplot(aes(x = loudness, y = energy)) +
     geom_point(colour = mass, size = 2) +
-    geom_segment(aes(x = loudness, xend = loudness, y = energy - valence/2, yend = energy + valence/2), colour = mass) +
+    geom_segment(aes(x = loudness, xend = loudness, y = energy - valence/2, yend = energy + valence/2), colour = mass, lwd = 0.1) +
     geom_point(data = filter(metal_df, metal_genre == subgenre), colour = accent, size = 3) +
     geom_segment(
       aes(x = loudness, xend = loudness, y = energy - valence/2, yend = energy + valence/2),
       filter(metal_df, metal_genre == subgenre),
       colour = accent,
-      lwd = 1
+      lwd = 0.5
     ) +
+    # geom_text(aes(-3, 0.2, label = subgenre), size = 32, colour = font, family = ft, hjust = 0.5) +
+    # geom_image(aes(x = -25, y = 0.5, image = images[[str_remove(subgenre, " metal")]]), size = 0.5, by = "width", inherit.aes = FALSE) +
     # geom_richtext(aes(-1, 0.5, label = "<img style=display: inline-block; src='2021/week-38/metallica.jpg' width='130' height='85'/>")) +
     theme_void() +
     theme(
       plot.background = element_rect(fill = "black"),
       text = element_text(colour = font),
-      plot.title = element_textbox(family = ft, hjust = 0),
-      plot.margin = margin(l = 300)
+      plot.title = element_textbox(family = ft, hjust = 0.5, size = 100),
+      plot.margin = margin(l = 200)
     ) +
     labs(
-      title = glue( "<span style='font-size:100px'>{toupper(subgenre)}</span>")
-    )
+      # title = glue("<span style='font-size:100px'>{toupper(subgenre)}</span>")
+      title = toupper(subgenre)
+    ) +
+    coord_cartesian(clip = "off")
 
+  # plot
   ggdraw() +
     draw_plot(plot) +
-    draw_image(images[[str_remove(subgenre, " metal")]], x = -0.1, y = 0.1, height = 0.6, width = 0.5)
+    draw_image(images[[str_remove(subgenre, " metal")]], x = -0.1, y = 0.1, height = 0.6, width = 0.5) +
+    ggsave(glue("./2021/week-38/final {subgenre}.png"), height = 4, width = 10)
 
 }
 
-fn("thrash metal") / fn("nu metal")
+fn("thrash metal")
+fn("nu metal")
+fn("groove metal")
+
+x1 <- image_read("./2021/week-38/final thrash metal.png")
+x2 <- image_read("./2021/week-38/final nu metal.png")
+x3 <- image_read("./2021/week-38/final groove metal.png")
+
+final <- image_append(c(x1, x2, x3), stack = TRUE)
+
+image_write(final, path = "./2021/week-38/final.png")
