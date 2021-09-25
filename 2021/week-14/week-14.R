@@ -39,13 +39,7 @@ df <- tt$allShades %>%
 n <- df %>%
   count(huec, lightc)
 
-<<<<<<< HEAD
-# x <- tt$allShades %>%
-#   filter(hue < 50) %>%
-#   filter(brand == "Maybelline")
-#
-# kmeans(x[,c("hue", "sat", "lightness")], 6)$centers
-=======
+
 df1 <- df %>%
   distinct(huec, lightc) %>%
   arrange(huec, lightc) %>%
@@ -53,7 +47,6 @@ df1 <- df %>%
 
 df <- df %>%
   left_join(df1)
->>>>>>> f37fe38281a43243d01bca653c6dbfe7a9ba235f
 
 #### colours ####
 bg <- "#c38e70"
