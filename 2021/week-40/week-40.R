@@ -35,9 +35,9 @@ df <- papers |>
 # fonts and palettes ------------------------------------------------------
 
 col <- list(
-  line = "grey80",
   text = "white",
-  pal = c("#540d6e", "#ee4266", "#ffd23f")
+  pal = c("#540d6e", "#ee4266", "#ffd23f"),
+  strip_bg = "grey10"
 )
 
 font_add_google("Inconsolata", "incon")
@@ -75,11 +75,11 @@ df |>
     plot.subtitle = element_markdown(size = 64, margin = margin(b = 30, t = 15), lineheight = 0.3),
     plot.background = element_rect(fill = "black"),
     plot.margin = margin(30, 30, 30, 30),
-    strip.text = element_text(margin = margin(5,5,5,5)),
+    strip.text = element_text(margin = margin(5, 5, 5, 5)),
     text = element_text(colour = col$text, family = fonts$text, size = 48),
     legend.title = element_text(lineheight = 0.4),
     legend.position = "bottom",
-    strip.background = element_rect(fill = "grey10")
+    strip.background = element_rect(fill = col$strip_bg)
   ) +
   ggsave("./2021/week-40/week-40.png", height = 12, width = 24)
 
