@@ -31,7 +31,6 @@ top_distributors <- nom |>
     str_detect(distributor, "National Geo") ~ "National Geographic",
     str_detect(distributor, "Disney") ~ "Disney",
     str_detect(distributor, "NBC") ~ "NBC",
-    # str_detect(distributor, )
     TRUE ~ distributor
   )) |>
   count(distributor) |>
