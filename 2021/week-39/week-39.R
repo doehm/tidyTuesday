@@ -17,8 +17,8 @@ nom <- tt$nominees |>
     str_detect(distributor, "Disney") ~ "Disney",
     str_detect(distributor, "NBC") ~ "NBC",
     str_detect(distributor, "HBO") ~ "HBO",
-    TRUE ~ distributor
-  ))
+    TRUE ~ distributor)
+  )
 
 top_distributors <- nom |>
   count(distributor) |>
