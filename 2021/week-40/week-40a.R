@@ -172,3 +172,75 @@ apply(x, 2, mean)
 mod <- MCMCpoisson(n_authors ~ year + program_desc, data = dat)
 
 predict(mod)
+
+
+
+
+# negative binomial model -------------------------------------------------
+
+dat <- papers |>
+  left_join(n_authors, by = "paper") |>
+  left_join(programs, by = "paper") |>
+  drop_na() |>
+  # filter(year > 2010) |>
+  mutate(
+    # year = as.factor(year),
+    year = as.factor(year - 1975),
+    program_desc = as.factor(program_desc),
+    program = as.factor(program),
+    category = as.factor(program_category)
+  )
+  # sample_n(1000)
+
+hist(dat$n_authors, breaks = 60)
+
+mod <- glm(n_authors ~ year*program, data = dat)
+summary(mod)
+par(mfrow = c(2,2)); plot(mod)
+dev.off()
+
+new_data <- distinct(dat, year, program)
+pred <- predict(mod, newdata = new_data, se.fit = TRUE)
+pred$se.fit <- sqrt(pred$se.fit^2 + pred$residual.scale^2)
+tibble(
+  mean_authors = pred$fit,
+  lower = pred$fit - qnorm(0.975)*pred$se.fit,
+  upper = pred$fit + qnorm(0.975)*pred$se.fit,
+  lower80 = pred$fit - qnorm(0.9)*pred$se.fit,
+  upper80 = pred$fit + qnorm(0.9)*pred$se.fit
+  ) |>
+  # mutate_if(is.numeric, exp) |>
+  bind_cols(distinct(dat, year, program)) |>
+  ggplot(aes(year, mean_authors)) +
+  geom_segment(aes(x = year, xend = year, y = lower, yend = upper), size = 0.5) +
+  geom_segment(aes(x = year, xend = year, y = lower80, yend = upper80), size = 1) +
+  geom_point() +
+  facet_wrap(~program) +
+  theme_minimal()
+
+
+mod_stan_nb <- stan_glm(n_authors ~ year + category, data = dat, family = neg_binomial_2())
+posterior_interval(mod_stan, 0.95)
+posterior_predict(mod_stan, newdata = new_data) |>
+  as_tibble() |>
+  pivot_longer(everything()) |>
+  mutate(
+    name = as.numeric(name),
+    y = as.numeric(value)
+    ) |>
+  group_by(name) |>
+  summarise(
+    median = median(y),
+    lower_95 = quantile(y, 0.025),
+    lower_80 = quantile(y, 0.1),
+    upper_80 = quantile(y, 0.9),
+    upper_95 = quantile(y, 0.975)
+  ) |>
+  bind_cols(new_data) |>
+  ggplot(aes(year, median)) +
+  geom_segment(aes(x = year, xend = year, y = lower_95, yend = upper_95), size = 0.5) +
+  geom_segment(aes(x = year, xend = year, y = lower_80, yend = upper_80), size = 1) +
+  geom_point() +
+  facet_wrap(~category, nrow = 1) +
+  theme_minimal()
+

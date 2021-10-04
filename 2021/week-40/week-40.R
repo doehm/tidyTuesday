@@ -34,6 +34,7 @@ df <- papers |>
 # fonts and palettes ------------------------------------------------------
 
 col <- list(
+  line = "white",
   text = "white",
   pal = c("#540d6e", "#ee4266", "#ffd23f"),
   bg = "black",
