@@ -35,6 +35,7 @@ df <- papers |>
 # fonts and palettes ------------------------------------------------------
 
 col <- list(
+  line = "white",
   text = "white",
   pal = c("#540d6e", "#ee4266", "#ffd23f"),
   strip_bg = "grey10"
@@ -50,7 +51,7 @@ fonts <- list(
 
 # text --------------------------------------------------------------------
 
-subtitle <- "The average number of authors on an NBER paper has increased over time. The number of contributors on papers in the <span style='color:#ffd23f'>Micro</span> program<br>category has been increasing at a faster rate than papers in the <span style='color:#540d6e'>Finance</span> and <span style='color:#ee4266'>Macro/International</span> program categories"
+subtitle <- "The average number of authors on NBER papers has increased over time. The number of contributors on papers in the <span style='color:#ffd23f'><strong>Micro</strong></span> program<br>category has been increasing at a faster rate than papers in the <span style='color:#540d6e'><strong>Finance</strong></span> and <span style='color:#ee4266'><strong>Macro/International</strong></span> program categories"
 
 # plot --------------------------------------------------------------------
 
