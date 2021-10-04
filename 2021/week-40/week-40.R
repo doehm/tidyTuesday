@@ -2,7 +2,6 @@
 # week 40 -----------------------------------------------------------------
 
 library(tidyverse)
-library(glue)
 library(ggtext)
 library(showtext)
 
@@ -37,6 +36,7 @@ df <- papers |>
 col <- list(
   text = "white",
   pal = c("#540d6e", "#ee4266", "#ffd23f"),
+  bg = "black",
   strip_bg = "grey10"
 )
 
@@ -50,7 +50,7 @@ fonts <- list(
 
 # text --------------------------------------------------------------------
 
-subtitle <- "The average number of authors on an NBER paper has increased over time. The number of contributors on papers in the <span style='color:#ffd23f'>Micro</span> program<br>category has been increasing at a faster rate than papers in the <span style='color:#540d6e'>Finance</span> and <span style='color:#ee4266'>Macro/International</span> program categories"
+subtitle <- "Collaboration has increased on NBER papers over the past 40 years. The average number of contributors on papers in the <span style='color:#ffd23f'>Micro</span> program<br>category has been increasing at a faster rate than papers in the <span style='color:#540d6e'>Finance</span> and <span style='color:#ee4266'>Macro/International</span> program categories"
 
 # plot --------------------------------------------------------------------
 
@@ -71,15 +71,15 @@ df |>
     axis.text = element_text(size = 32),
     axis.text.x = element_text(margin = margin(b = 15)),
     axis.title.y = element_text(angle = 90, margin = margin(r = 30)),
+    legend.position = "bottom",
+    legend.title = element_text(lineheight = 0.4),
+    plot.background = element_rect(fill = col$bg),
+    plot.margin = margin(30, 30, 30, 30),
     plot.title = element_text(face = "bold", size = 128),
     plot.subtitle = element_markdown(size = 64, margin = margin(b = 30, t = 15), lineheight = 0.3),
-    plot.background = element_rect(fill = "black"),
-    plot.margin = margin(30, 30, 30, 30),
     strip.text = element_text(margin = margin(5, 5, 5, 5)),
-    text = element_text(colour = col$text, family = fonts$text, size = 48),
-    legend.title = element_text(lineheight = 0.4),
-    legend.position = "bottom",
-    strip.background = element_rect(fill = col$strip_bg)
+    strip.background = element_rect(fill = col$strip_bg),
+    text = element_text(colour = col$text, family = fonts$text, size = 48)
   ) +
   ggsave("./2021/week-40/week-40.png", height = 12, width = 24)
 
