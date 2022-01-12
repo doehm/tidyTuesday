@@ -18,7 +18,6 @@ stressor <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/t
 # fonts and palettes ------------------------------------------------------
 
 honey_pal <- c("#E3D7C1", "#C8B188", "#C4952E", "#BE7C22", "#93500C")
-bg <- colorspace::darken(honey_pal[5], 0.5)
 
 font_add_google("Dancing Script", "naut")
 font_add_google("Shadows Into Light", "shadow")
