@@ -18,12 +18,12 @@ chocolate <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/
 
 str_rich_wrap <- function(x, n, pattern = "XZ") {
   parts <- str_extract_all(x, "<.*?>")[[1]]
-  x1 <- str_replace_all(x, "<.*?>", pattern)
-  x2 <- str_wrap(x1, n)
+  x1 <- str_replace_all(x, "<.*?>", pattern) |>
+    str_wrap(n)
   for(k in parts) {
-    x2 <- str_replace(x2, pattern, k)
+    x1 <- str_replace(x1, pattern, k)
   }
-  str_replace_all(x2, "\\n", "<br>")
+  str_replace_all(x1, "\\n", "<br>")
 }
 
 # fonts and palettes ------------------------------------------------------
