@@ -14,6 +14,18 @@ library(snakecase)
 
 chocolate <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-18/chocolate.csv')
 
+# functions ---------------------------------------------------------------
+
+str_rich_wrap <- function(x, n, pattern = "XZ") {
+  parts <- str_extract_all(x, "<.*?>")[[1]]
+  x1 <- str_replace_all(x, "<.*?>", pattern)
+  x2 <- str_wrap(x1, n)
+  for(k in parts) {
+    x2 <- str_replace(x2, pattern, k)
+  }
+  str_replace_all(x2, "\\n", "<br>")
+}
+
 # fonts and palettes ------------------------------------------------------
 
 pal <- c("#987654","#7D5D3D","#634626","#4A2F11","#321A00","#1A0100")
@@ -82,7 +94,7 @@ df_labs <- tribble(
 # titles ------------------------------------------------------------------
 
 title <- "The Best Chocolate Is..."
-subtitle <- str_rich_wrap("<strong>Rich and creamy with delicate cocoa flavours, fruit-driven undertones and warmth from a hint of spice</strong><br> Chocolate is rated on a scale of 1-5 and described with the most memorable characteristics. They can be described with multiple characteristics. The average chocolate rating is 3.3. The characteristics below are associated with either higher or lower ratings on average. Colour corresponds to the cocoa % of the chocolate. The perfect chocolate is <strong><span style='color:#4A2F11'>rich and creamy and 70% cocoa</span></strong>", 100)
+subtitle <- str_rich_wrap("<strong>Rich and creamy with delicate cocoa flavours, fruit-driven undertones and warmth from a hint of spice</strong><br> Chocolate is rated on a scale of 1-5 and described with the most memorable characteristics. They can be described with multiple characteristics. The average chocolate rating is 3.3. The characteristics below are associated with either higher or lower ratings on average. Colour corresponds to the cocoa % of the chocolate. The perfect chocolate is <strong><span style='color:#4A2F11'>rich and creamy and 70% cocoa</span></strong>", 115)
 caption <- "Graphic: @danoehm / Source: Flavors of Cacao by way of Georgios and Kelsey / #rstats #tidytuesday week 3"
 colour <- "Mean Cocoa %"
 
