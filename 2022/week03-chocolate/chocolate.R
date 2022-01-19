@@ -70,13 +70,6 @@ df <- df_coef |>
     y = as.numeric(var),
     char = as.character(var)
     ) |>
-  mutate(
-    rect_grp = case_when(
-      mean > 0 ~ "a",
-      mean < -0.1 ~ "b",
-      TRUE ~ "c"
-    )
-  ) |>
   left_join(mean_cocoa, by = "char")
 
 df_labs <- tribble(
