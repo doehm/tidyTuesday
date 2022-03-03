@@ -38,7 +38,7 @@ for(k in 1:nrow(df_base)) {
     theme(plot.background = element_rect(fill = "black"), plot.margin = margin(0, -100, -50, -100)) +
     ggsave(glue("2022/week09-energy/bolts/{df_base$state[k]}.png"), height = 4, width = 3)
 
-  base <- image_read('C:/Users/Dan/Downloads/fontawesome/lightning-bolt.png') |>
+  base <- image_read('2022/week09-energy/lightning-bolt.png') |>
     image_resize("220x180")
 
   measure <- image_read(glue("2022/week09-energy/bolts/{df_base$state[k]}.png")) |>
