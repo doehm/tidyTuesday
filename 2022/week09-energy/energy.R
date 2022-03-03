@@ -1,5 +1,6 @@
 # https://github.com/rfordatascience/tidytuesday
 
+# for libraries and custom functions
 source("scripts/startup.R")
 
 log_file <<- "2022/week09-energy/log.txt"
@@ -18,10 +19,14 @@ ft_title <- ft_text
 
 # wrangle -----------------------------------------------------------------
 
-df_base_0 <- stations |>
+df_base <- stations |>
   time_log() |>
   group_by(state) |>
-  summarise(p = sum(fuel_type_code == "ELEC")/n())
+  summarise(p = sum(fuel_type_code == "ELEC")/n()) |>
+  mutate(
+    code = state,
+    info_graph = glue("<img src='2022/week09-energy/bolts/{state}.png' width = 35 height = 50>")
+  )
 
 # create the fill charts and merge with the bolts
 for(k in 1:nrow(df_base)) {
@@ -30,23 +35,18 @@ for(k in 1:nrow(df_base)) {
     geom_col(fill = "#219ebc") +
     ylim(c(0, 1)) +
     theme_void() +
-    theme(plot.background = element_rect(fill = "black"), plot.margin = margin(0, -100, -100, -100)) +
+    theme(plot.background = element_rect(fill = "black"), plot.margin = margin(0, -100, -50, -100)) +
     ggsave(glue("2022/week09-energy/bolts/{df_base$state[k]}.png"), height = 4, width = 3)
 
   base <- image_read('C:/Users/Dan/Downloads/fontawesome/lightning-bolt.png') |>
     image_resize("220x180")
+
   measure <- image_read(glue("2022/week09-energy/bolts/{df_base$state[k]}.png")) |>
     image_resize("220x180")
 
   image_composite(base, measure, "plus") |>
     image_write(glue("2022/week09-energy/bolts/{df_base$state[k]}.png"))
 }
-
-df_base <- df_base_0 |>
-  mutate(
-    code = state,
-    info_graph = glue("<img src='2022/week09-energy/bolts/{state}.png' width = 35 height = 50>")
-    )
 
 # titles ------------------------------------------------------------------
 
@@ -66,14 +66,10 @@ df_base |>
   facet_geo(~code, grid = us_state_grid1) +
 
   # theme and scales and labs
-  scale_fill_manual(values = pal) +
-  scale_colour_manual(values = pal) +
   labs(
     title = title,
     subtitle = subtitle,
-    caption = caption,
-    fill = fill,
-    colour = colour
+    caption = caption
   ) +
   theme_void() +
   theme(
