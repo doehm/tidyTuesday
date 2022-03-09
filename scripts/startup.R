@@ -36,6 +36,8 @@ bright <- c("#540d6e", "#ee4266", "#ffd23f", "#3bceac")
 dark <- "#181510"
 light <- "#FFF6EC"
 
+spec <- c("#005f73", "#0a9396", "#94d2bd", "#e9d8a6", "#ee9b00", "#ca6702", "#bb3e03", "#ae2012")
+
 # fonts -------------------------------------------------------------------
 
 font_add_google("Abel", "abel")
@@ -50,6 +52,11 @@ sysfonts::font_add(
   regular = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Josefin/Static/JosefinSans-Thin.ttf",
   italic = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Josefin/Static/JosefinSans-ThinItalic.ttf"
 )
+sysfonts::font_add(
+  family = "incon",
+  regular = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Inconsolata/static/Inconsolata/Inconsolata-ExtraLight.ttf",
+  bold = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Inconsolata/static/Inconsolata/Inconsolata-ExtraBold.ttf"
+)
 font_add_google("Barlow Condensed", "barlow")
 showtext_auto()
 
@@ -60,7 +67,7 @@ time_log <- function(df, ...) {
   df
 }
 
-get_time <- function(...) {
+get_time <- function(.duration = 5, ...) {
 
   stamp <- str_replace(log_file, ".txt", "-posted.txt")
   if(file.exists(stamp)) {
@@ -79,7 +86,7 @@ get_time <- function(...) {
     mutate(
       duration = difftime(date_time, lag(date_time), units = "mins"),
       duration = replace_na(duration, 0),
-      duration = pmin(duration, 10)
+      duration = pmin(duration, .duration)
     ) |>
     summarise(total = sum(duration)) |>
     mutate(hours = glue("{floor(total/60)}h{round(60*(total/60 - floor(total/60)))}m"))
