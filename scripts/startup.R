@@ -13,6 +13,7 @@ library(ggbump)
 library(geofacet)
 library(crayon)
 library(magick)
+library(ggrepel)
 
 # rich wrap ---------------------------------------------------------------
 

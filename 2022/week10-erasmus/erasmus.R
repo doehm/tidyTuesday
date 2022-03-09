@@ -33,8 +33,7 @@ erasmus <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/ti
 
 # fonts and palettes ------------------------------------------------------
 
-pal <- bright
-bg <- lighten(dark, 0.1)
+bg <- dark
 
 ft_text <- "incon"
 ft_title <- ft_text
@@ -110,7 +109,7 @@ df_base |>
   ) |>
   time_log() |>
   ggplot() +
-  geom_text(aes(x, y, label = label), labels, family = ft_text, size = 40, colour = darken(bg, 0.3), fontface = "bold", lineheight = 0.25) +
+  geom_text(aes(x, y, label = label), labels, family = ft_text, size = 40, colour = "black", fontface = "bold", lineheight = 0.25) +
   geom_hline(yintercept = 0, colour = "grey80", alpha = 0.5, size = 0.1) +
   geom_vline(xintercept = 0, colour = "grey80", alpha = 0.5, size = 0.1) +
   geom_point(aes(d, d_age, colour = n_female_rec), size = 5) +
@@ -132,7 +131,7 @@ df_base |>
   theme_void() +
   theme(
     text = element_text(colour = light),
-    plot.background = element_rect(fill = bg, colour = NA),
+    plot.background = element_rect(fill = bg, colour = bg),
     plot.title = element_text(hjust = 0.5, family = ft_text, size = 125, face = "bold", margin = margin(b = 15)),
     plot.subtitle = element_markdown(hjust = 0.5, family = ft_text, size = 36, lineheight = 0.35, halign = 0, margin = margin(b = 50)),
     plot.caption = element_markdown(hjust = 0.5, family = ft_text, size = 36, lineheight = 0.35, margin = margin(t = 20)),
