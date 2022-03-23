@@ -87,15 +87,16 @@ typically receive older cohorts than they send whereas <strong>North Macedonia</
 difference in the mean is almost negligible.
 ", 170)
 caption <- glue("Graphic: {get_icon('twitter', 10, fill = list(bg = bg, img = light))} @danoehm / Source: Data.Europa.eu / Code: {get_icon('github', 10, fill = list(bg = bg, img = light))} doehm/tidytuesday #rstats #tidytuesday")
+caption_white <- glue("Graphic: {get_icon('twitter', 10)} @danoehm / Source: Data.Europa.eu / Code: {get_icon('github', 10)} doehm/tidytuesday #rstats #tidytuesday")
 fill <- "Fill"
 colour <- "Proportion\nof Women"
 
 labels <- tribble(
   ~x, ~y, ~label,
-  -0.05, 0.25, "Older students\nReceived less",
-  0.1, 0.25, "Older students\nReceived more",
-  -0.05, -0.25, "Younger students\nReceived less",
-  0.1, -0.25, "Younger students\nReceived More"
+  -0.1, 0.35, "Older students\nReceived < sent",
+  0.19, 0.35, "Older students\nReceived > sent",
+  -0.1, -0.35, "Younger students\nReceived < sent",
+  0.19, -0.35, "Younger students\nReceived > sent"
 )
 
 # plot --------------------------------------------------------------------
@@ -109,7 +110,7 @@ df_base |>
   ) |>
   time_log() |>
   ggplot() +
-  geom_text(aes(x, y, label = label), labels, family = ft_text, size = 40, colour = "black", fontface = "bold", lineheight = 0.25) +
+  geom_text(aes(x, y, label = label), labels, family = ft_text, size = 16, colour = "black", fontface = "bold", lineheight = 0.25) +
   geom_hline(yintercept = 0, colour = "grey80", alpha = 0.5, size = 0.1) +
   geom_vline(xintercept = 0, colour = "grey80", alpha = 0.5, size = 0.1) +
   geom_point(aes(d, d_age, colour = n_female_rec), size = 5) +
@@ -144,3 +145,56 @@ df_base |>
     legend.position = "right"
   ) +
   ggsave("2022/week10-erasmus/erasmus.png", height = 10, width = 14)
+
+
+
+# white -------------------------------------------------------------------
+
+bg <- "white"
+ft_text <- "inconr"
+df_base |>
+  filter(
+    d_age > -1,
+    d_age < 1,
+    d > -1000,
+    d < 2000
+  ) |>
+  time_log() |>
+  ggplot() +
+  geom_text(aes(x, y, label = label), labels, family = ft_text, size = 16, colour = dark, fontface = "bold", lineheight = 0.25) +
+  geom_hline(yintercept = 0, colour = dark, alpha = 0.5, size = 0.1) +
+  geom_vline(xintercept = 0, colour = dark, alpha = 0.5, size = 0.1) +
+  geom_point(aes(d, d_age, colour = n_female_rec), size = 6) +
+  geom_text_repel(aes(d, d_age, label = sending), size = 16, family = ft_text, colour = dark, force = 2) +
+
+  # theme and scales and labs
+  scale_colour_gradientn(colours = rev(spec)) +
+  scale_x_continuous(breaks = seq(-0.1, 0.15, 0.05), labels = paste0(seq(-10, 15, 5), "%")) +
+  scale_size(guide = NULL) +
+  labs(
+    title = title,
+    subtitle = subtitle,
+    caption = caption_white,
+    fill = fill,
+    colour = colour,
+    x = "Net Gain in Number of Students",
+    y = "Difference in Mean Age"
+  ) +
+  coord_cartesian(clip = "off") +
+  theme_void() +
+  theme(
+    text = element_text(colour = dark),
+    plot.background = element_rect(fill = bg, colour = bg),
+    plot.title = element_text(hjust = 0.5, family = ft_text, size = 125, face = "bold", margin = margin(b = 15)),
+    plot.subtitle = element_markdown(hjust = 0.5, family = ft_text, size = 36, lineheight = 0.35, halign = 0, margin = margin(b = 50)),
+    plot.caption = element_markdown(hjust = 0.5, family = ft_text, size = 36, lineheight = 0.35, margin = margin(t = 20)),
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20),
+    axis.text = element_text(family = ft_text, size = 32),
+    axis.title = element_text(family = ft_text, size = 48, margin = margin(t = 15)),
+    axis.title.y = element_text(family = ft_text, size = 48, angle = 90, margin = margin(r = 15)),
+    legend.title = element_text(family = ft_text, size = 36, lineheight = 0.35),
+    legend.text = element_text(family = ft_text, size = 36),
+    legend.position = "right"
+  ) +
+  ggsave("2022/week10-erasmus/erasmus-white.png", height = 10, width = 14, dpi = 300)
+

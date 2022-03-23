@@ -14,6 +14,7 @@ library(geofacet)
 library(crayon)
 library(magick)
 library(ggrepel)
+library(countrycode)
 
 # rich wrap ---------------------------------------------------------------
 
@@ -58,7 +59,16 @@ sysfonts::font_add(
   regular = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Inconsolata/static/Inconsolata/Inconsolata-ExtraLight.ttf",
   bold = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Inconsolata/static/Inconsolata/Inconsolata-ExtraBold.ttf"
 )
+sysfonts::font_add(
+  family = "inconr",
+  regular = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Inconsolata/static/Inconsolata/Inconsolata-Regular.ttf",
+  bold = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Inconsolata/static/Inconsolata/Inconsolata-Bold.ttf"
+)
 font_add_google("Barlow Condensed", "barlow")
+font_add_google("Oswald", "oswald")
+font_add_google("Secular One", "sec")
+font_add_google("Patrick Hand", "hand")
+font_add_google("Palette Mosaic", "pm")
 showtext_auto()
 
 # time log ----------------------------------------------------------------
