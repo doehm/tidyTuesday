@@ -116,6 +116,15 @@ df_legend_dots <- tibble(
   y = c(53, 53, 53, 52.5, 52.5, 52, 51.5)
 )
 
+
+# titles ------------------------------------------------------------------
+
+title <- ""
+subtitle <- ""
+caption <- "Graphic: @danoehm / Source: / #rstats #tidytuesday"
+fill <- ""
+colour <- ""
+
 # plot --------------------------------------------------------------------
 
 ggplot() +
