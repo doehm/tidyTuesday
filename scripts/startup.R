@@ -37,7 +37,8 @@ bad_pal <- rev(c("#ef6351", "#f38375", "#f7a399", "#fbc3bc", "#ffe3e0", "white")
 bright <- c("#540d6e", "#ee4266", "#ffd23f", "#3bceac")
 dark <- "#181510"
 light <- "#FFF6EC"
-
+lakes <- c("#788FCE", "#e07a5f", "#f2cc8f", "#81b29a", "#f4f1de")
+bg_lakes <- "#3d405b"
 spec <- c("#005f73", "#0a9396", "#94d2bd", "#e9d8a6", "#ee9b00", "#ca6702", "#bb3e03", "#ae2012")
 
 # fonts -------------------------------------------------------------------
@@ -155,3 +156,13 @@ get_icon <- function(name, size = 50, fill = NULL) {
 }
 
 
+
+# ggtext colour -----------------------------------------------------------
+
+col_generic <- function(text, colour) {
+  glue("<span style='color:{colour}'>{text}</span>")
+}
+
+b <- function(text) {
+  paste0("<strong>", text, "</strong>")
+}
