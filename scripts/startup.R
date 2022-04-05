@@ -70,6 +70,7 @@ font_add_google("Oswald", "oswald")
 font_add_google("Secular One", "sec")
 font_add_google("Patrick Hand", "hand")
 font_add_google("Palette Mosaic", "pm")
+font_add_google("Crete Round", "crete")
 showtext_auto()
 
 # time log ----------------------------------------------------------------
