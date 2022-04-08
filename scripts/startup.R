@@ -75,6 +75,7 @@ showtext_auto()
 
 # time log ----------------------------------------------------------------
 
+# an unconventional way to log the time I spend on tidytuesday
 time_log <- function(df, ...) {
   write_lines(Sys.time(), file = log_file, append = TRUE)
   df
