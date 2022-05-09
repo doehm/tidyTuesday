@@ -97,7 +97,7 @@ g_base <- ggplot() +
   coord_cartesian(clip = "off") +
   theme_void() +
   theme(
-    plot.background = element_rect(fill = bg, colour = bg),
+    plot.background = element_rect(fill = bg, colour = bg)
   )
 
 g_crossword <- df_base |>

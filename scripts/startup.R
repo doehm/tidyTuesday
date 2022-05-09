@@ -15,6 +15,8 @@ library(crayon)
 library(magick)
 library(ggrepel)
 library(countrycode)
+library(ggstream)
+library(geomtextpath)
 
 # rich wrap ---------------------------------------------------------------
 
@@ -65,12 +67,17 @@ sysfonts::font_add(
   regular = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Inconsolata/static/Inconsolata/Inconsolata-Regular.ttf",
   bold = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Inconsolata/static/Inconsolata/Inconsolata-Bold.ttf"
 )
+sysfonts::font_add(
+  family = "nyt",
+  regular = "C:/Users/Dan/Documents/R/repos/survivorDev/assets/fonts/Chomsky-font/Chomsky-8MOa2.otf"
+)
 font_add_google("Barlow Condensed", "barlow")
 font_add_google("Oswald", "oswald")
 font_add_google("Secular One", "sec")
 font_add_google("Patrick Hand", "hand")
 font_add_google("Palette Mosaic", "pm")
 font_add_google("Crete Round", "crete")
+font_add_google("Orelega One", "oreg")
 showtext_auto()
 
 # time log ----------------------------------------------------------------

@@ -104,4 +104,3 @@ df_base2 |>
   ) +
   coord_flip(clip = "off") +
   ggsave("2022/week13-sports/sports.png", height = 18, width = 12)
-
