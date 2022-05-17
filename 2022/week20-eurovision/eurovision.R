@@ -49,7 +49,6 @@ fill <- "Section"
 # plot --------------------------------------------------------------------
 
 df_base |>
-  time_log() |>
   ggplot(aes(artist_country, total_points, fill = section)) +
   geom_chicklet(radius = grid::unit(8, "pt"), colour = NA) +
   coord_flip() +
@@ -86,7 +85,6 @@ ggsave("2022/week20-eurovision/eurovision1.png", height = 12.25, width = 10)
 bg <- "white"
 txt_col <- dark
 df_points |>
-  time_log() |>
   ggplot(aes(year, points, fill = artist_country)) +
   geom_stream() +
 
