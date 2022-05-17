@@ -78,6 +78,7 @@ font_add_google("Patrick Hand", "hand")
 font_add_google("Palette Mosaic", "pm")
 font_add_google("Crete Round", "crete")
 font_add_google("Orelega One", "oreg")
+font_add_google("Zen Loop", "zen")
 showtext_auto()
 
 # time log ----------------------------------------------------------------
@@ -106,7 +107,7 @@ get_time <- function(.duration = 5, ...) {
     filter(date_time <= posted) |>
     mutate(
       duration = difftime(date_time, lag(date_time), units = "mins"),
-      duration = replace_na(duration, 0),
+      duration = ifelse(is.na(duration), 0, duration),
       duration = pmin(duration, .duration)
     ) |>
     summarise(total = sum(duration)) |>
