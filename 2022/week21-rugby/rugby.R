@@ -28,7 +28,6 @@ ft_title <- ft_text
 # wrangle -----------------------------------------------------------------
 
 df_home <- fifteens |>
-  time_log() |>
   count(home_away_win) |>
   mutate(p = n/sum(n))
 
@@ -39,7 +38,6 @@ df_score <- fifteens |>
 # simple prior: theta ~ beta(5, 5)
 # sampling directly
 df_country <- fifteens |>
-  time_log() |>
   filter(home_away_win %in% c("H", "A")) |>
   select(home_away_win, winner, loser) |>
   pivot_longer(-home_away_win, names_to = "result", values_to = "country") |>
@@ -112,7 +110,7 @@ g_base <- ggplot() +
     plot.margin = margin(t = 20, r = 20, b = 20, l = 50),
     plot.title = element_text(hjust = 0, family = ft_title, size = 128, colour = txt_col, lineheight = 0.35, face = "bold"),
     plot.subtitle = element_markdown(hjust = 0, family = ft_text, size = 48, lineheight = 0.4, colour = txt_col),
-    plot.background = element_rect(fill = bg, colour = bg),
+    plot.background = element_rect(fill = bg,  colour = bg),
   )
 
 # bar chart ---------------------------------------------------------------
@@ -140,8 +138,6 @@ g_bar <- df_home |>
     text = element_text(colour = txt_col, family = ft_text),
     plot.background = element_rect(fill = bg, colour = bg),
     plot.title = element_text(hjust = 0, family = ft_title, size = 48, margin = margin(b = 10)),
-    plot.subtitle = element_markdown(hjust = 0.5, family = ft_text, size = 64, lineheight = 0.35),
-    plot.caption = element_markdown(hjust = 0.5, family = ft_text, size = 36, lineheight = 0.35, margin = margin(t = 20)),
     plot.margin = margin(t = 20, r = 20, b = 20, l = 20),
     legend.title = element_text(family = ft_text, size = 36, lineheight = 0.25),
     legend.text = element_text(family = ft_text, size = 36),
