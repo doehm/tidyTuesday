@@ -35,7 +35,10 @@ for(k in 1:nrow(df_base)) {
     geom_col(fill = "#219ebc") +
     ylim(c(0, 1)) +
     theme_void() +
-    theme(plot.background = element_rect(fill = "black"), plot.margin = margin(0, -100, -50, -100)) +
+    theme(
+      plot.background = element_rect(fill = "black"),
+      plot.margin = margin(0, -100, -50, -100)
+      ) +
     ggsave(glue("2022/week09-energy/bolts/{df_base$state[k]}.png"), height = 4, width = 3)
 
   base <- image_read('2022/week09-energy/lightning-bolt.png') |>

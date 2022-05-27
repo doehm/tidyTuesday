@@ -17,6 +17,8 @@ library(ggrepel)
 library(countrycode)
 library(ggstream)
 library(geomtextpath)
+library(rstanarm)
+library(ggdist)
 
 # rich wrap ---------------------------------------------------------------
 
@@ -42,6 +44,8 @@ light <- "#FFF6EC"
 lakes <- c("#788FCE", "#e07a5f", "#f2cc8f", "#81b29a", "#f4f1de")
 bg_lakes <- "#3d405b"
 spec <- c("#005f73", "#0a9396", "#94d2bd", "#e9d8a6", "#ee9b00", "#ca6702", "#bb3e03", "#ae2012")
+pror <- c("#7b2cbf", "#ff7900", "#127475", "#a53860")
+prorg <- colorRampPalette(pror[1:2])(6)
 
 # fonts -------------------------------------------------------------------
 
@@ -169,7 +173,7 @@ get_icon <- function(name, size = 50, fill = NULL) {
 
 # ggtext colour -----------------------------------------------------------
 
-col_generic <- function(text, colour) {
+cg <- function(text, colour) {
   glue("<span style='color:{colour}'>{text}</span>")
 }
 

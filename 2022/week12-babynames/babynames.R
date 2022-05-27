@@ -39,32 +39,28 @@ df_int <- df_female |>
   filter(n() > 1) |>
   mutate(grand_total = sum(total)) |>
   group_by(decade) |>
-  slice_max(grand_total, n = 750, with_ties = TRUE) |>
+  # slice_max(grand_total, n = 750, with_ties = TRUE) |>
   arrange(name, decade) |>
   group_by(name) |>
   mutate(
     lag_p_female = lag(p_female),
     change0 = p_female - lag_p_female,
-    change = abs(p_female - lag_p_female),
-    col = case_when(
-      p_female < 0.5 & lag_p_female > 0.5 ~ "more_females",
-      p_female > 0.5 & lag_p_female < 0.5 ~ "less_females",
-      TRUE ~ "-"
-    )
+    change = abs(p_female - lag_p_female)
   )
 
 df_col <- df_int |>
   drop_na() |>
-  select(name, col, change, change0, p_female_2010 = p_female)
+  select(name, change, change0, p_female_2010 = p_female)
 
 top_n <- 30
 df_top <- df_int |>
   ungroup() |>
   drop_na() |>
-  slice_max(change, n = top_n)
+  slice_max(change, n = top_n) |>
+  sample_n(top_n)
 
 df_base <- df_int |>
-  select(-col, -change, -change0) |>
+  select(-change, -change0) |>
   left_join(df_col, by = "name")
 
 
@@ -84,11 +80,9 @@ caption <- glue("Graphic: {get_icon('twitter', 10)} @danoehm / Source: babynames
 fill <- "Fill"
 colour <- "Colour"
 
-# plot --------------------------------------------------------------------
 
 df_base |>
   time_log() |>
-  get_time() |>
   ggplot() +
   geom_line(aes(decade, p_female, group = name, colour = p_female_2010, alpha = change)) +
   geom_point(aes(decade, p_female, colour = p_female_2010, alpha = change), size = 2) +
@@ -121,6 +115,4 @@ df_base |>
     axis.text.y = element_text(size = 36, margin = margin(l = 10)),
     axis.text.x = element_text(size = 64, hjust = 0)
   ) +
-  ggsave("2022/week12-babynames/babynames.png", height = 14, width = 11)
-
-
+  ggsave("2022/week12-babynames/babynames1.png", height = 14, width = 11)
