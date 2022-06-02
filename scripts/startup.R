@@ -83,6 +83,7 @@ font_add_google("Palette Mosaic", "pm")
 font_add_google("Crete Round", "crete")
 font_add_google("Orelega One", "oreg")
 font_add_google("Zen Loop", "zen")
+font_add_google("Kanit", "kan")
 showtext_auto()
 
 # time log ----------------------------------------------------------------
