@@ -19,6 +19,7 @@ library(ggstream)
 library(geomtextpath)
 library(rstanarm)
 library(ggdist)
+library(ggnewscale)
 
 # rich wrap ---------------------------------------------------------------
 
@@ -84,6 +85,9 @@ font_add_google("Crete Round", "crete")
 font_add_google("Orelega One", "oreg")
 font_add_google("Zen Loop", "zen")
 font_add_google("Kanit", "kan")
+font_add_google("Lobster", "lobster")
+font_add_google("Pacifico", "pacifico")
+font_add_google("Indie Flower", "indie")
 showtext_auto()
 
 # time log ----------------------------------------------------------------
@@ -174,7 +178,10 @@ get_icon <- function(name, size = 50, fill = NULL) {
 
 # ggtext colour -----------------------------------------------------------
 
-cg <- function(text, colour) {
+cg <- function(text, colour = NULL) {
+  if(is.null(colour)) {
+    colour <- pal[names(pal) == text]
+  }
   glue("<span style='color:{colour}'>{text}</span>")
 }
 
