@@ -64,8 +64,7 @@ df_rainbow <- map2_dfr(df_base$politicians, df_base$company, function(.t, .compa
       )
   })
 }) |>
-  left_join(select(df_base, company, pride), by = "company") |>
-  mutate(col = ifelse(pride, rainbow_ramp[a-100], dullbow[a-100]))
+  left_join(select(df_base, company, pride), by = "company")
 
 df_textline <- map2_dfr(df_base$politicians, df_base$company, function(.t, .company) {
     tibble(
@@ -86,18 +85,19 @@ df_textline <- map2_dfr(df_base$politicians, df_base$company, function(.t, .comp
 
 lgbt <- glue("{cg('L')}{cg('G')}{cg('B')}{cg('T')}{cg('Q')}{cg('+')}")
 
+# The colourful rainbows are those that made the HRC business pledge. The dullbows are those that did not
+
 title <- glue("Pride Sponsors and Political Ties")
 subtitle <- glue(
-"Each company is a pride sponsor although they also contributed to anti-{lgbt} politicians. The rainbow is a scale, more rainbow means more support for<br>
-the {lgbt} community and less for the politician relative to other companies on the list. For every Anti-{lgbt} politicians supported, the rainbow is reduced<br>
-The colourful rainbows are those that made the HRC business pledge. The dullbows are those that did not.
-Legend: Amount contributed / Number of politicians supported
+"Each company is a pride sponsor although they also contributed to anti-{lgbt} politicians. The rainbow is a scale,<br>
+more rainbow means more support for the {lgbt} community and less for the politicians relative to other companies on<br>
+the list. For every Anti-{lgbt} politician supported, the rainbow is reduced.
 ")
 caption <- glue("Graphic: {get_icon('twitter', 10, fill = list(bg = bg, img = txt_col))} @danoehm / Source: Data For Progress / Code: {get_icon('github', 10, fill = list(bg = bg, img = txt_col))} doehm/tidytuesday #rstats #tidytuesday")
 
 # plot --------------------------------------------------------------------
 
-df_rainbow |>
+g_base <- df_rainbow |>
   ggplot(aes(x, y, group = a, colour = a)) +
 
   # colour rainbows
@@ -128,8 +128,8 @@ df_rainbow |>
   theme(
     text = element_text(colour = txt_col),
     plot.background = element_rect(fill = bg, colour = bg),
-    plot.title = element_markdown(hjust = 0.5, family = ft_title, size = 128),
-    plot.subtitle = element_markdown(hjust = 0.5, family = ft_text, size = 48, lineheight = 0.35),
+    plot.title = element_markdown(hjust = 0.15, family = ft_title, size = 128),
+    plot.subtitle = element_markdown(hjust = 0, family = ft_text, size = 48, lineheight = 0.35, margin = margin(b = 40)),
     plot.caption = element_markdown(hjust = 0.5, family = ft_text, size = 36, lineheight = 0.35, margin = margin(t = 20)),
     plot.margin = margin(t = 20, r = 20, b = 20, l = 20),
     strip.text = element_blank(),
@@ -137,3 +137,62 @@ df_rainbow |>
   )
 
 ggsave("2022/week23-pride/pride.png", height = 12, width = 18)
+
+
+# legend ------------------------------------------------------------------
+
+df_legend <- df_rainbow |>
+  filter(company %in% c("Bank of America", "Capital One"))
+
+df_textline_legend <- df_textline |>
+  filter(company %in% c("Bank of America", "Capital One")) |>
+  mutate(label = ifelse(company == "Capital One", "Yes", "No"))
+
+g_legend <- df_legend |>
+  ggplot(aes(x, y, group = a, colour = a)) +
+
+  # colour rainbows
+  geom_line(size = 1) +
+  scale_color_gradientn(colours = rev(rainbow)) +
+
+  # start new scale
+  new_scale_colour() +
+
+  # dullbows
+  geom_line(aes(x, y, group = a, colour = a), filter(df_legend, !pride), size = 1) +
+  scale_color_gradientn(colours = rev(dullbow)) +
+
+  # text
+  geom_textpath(aes(x, y+10, label = label), df_textline_legend, colour = txt_col, size = 14, family = ft_text, text_only = TRUE, fontface = "bold") +
+  geom_text(
+    aes(170 + 50, 0, label = label),
+    df_base |>
+      filter(company %in% c("Bank of America", "Capital One")) |>
+      mutate(label = c("X / Y", "X / Y")),
+    colour = txt_col, size = 14, family = ft_text) +
+  facet_wrap(~company) +
+  ylim(c(-10, 260)) +
+  coord_cartesian(clip = "off") +
+
+  # labels and themes
+  labs(
+    subtitle = "Made the HRC business pledge?",
+    caption = "X = $ contributed<br>Y = # of politicians supported<br>More rainbow = Fewer anti-LGBTQ+ politicians supported"
+    ) +
+  theme_void() +
+  theme(
+    text = element_text(colour = txt_col),
+    plot.background = element_rect(fill = bg, colour = bg),
+    plot.title = element_markdown(hjust = 0.5, family = ft_title, size = 128),
+    plot.subtitle = element_markdown(hjust = 0.5, family = ft_text, size = 48, lineheight = 0.35, margin = margin(b = 0)),
+    plot.caption = element_markdown(hjust = 0, family = ft_text, size = 36, lineheight = 0.3, margin = margin(t = 5)),
+    plot.margin = margin(t = 00, r = 0, b = 0, l = 0),
+    strip.text = element_blank(),
+    legend.position = "none"
+  )
+
+ggsave("2022/week23-pride/pride-legend.png", height = 12, width = 18)
+
+g_base +
+  inset_element(g_legend, left = 0.7, bottom = 1, top = 1.20, right = 0.92)
+ggsave("2022/week23-pride/pride-legend.png", height = 12, width = 18)
