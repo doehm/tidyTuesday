@@ -17,9 +17,11 @@ library(ggrepel)
 library(countrycode)
 library(ggstream)
 library(geomtextpath)
-library(rstanarm)
+# library(rstanarm)
 library(ggdist)
 library(ggnewscale)
+library(patchwork)
+library(ggstream)
 
 # rich wrap ---------------------------------------------------------------
 
