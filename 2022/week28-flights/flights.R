@@ -142,39 +142,6 @@ df_base |>
     arrow = arrow(length = unit(0.015, "npc"), type = "closed"), curvature = -0.3
     ) +
 
-  # # lockdown
-  # annotate(
-  #   "richtext", x = ymd("2019-01-25"), y = 420000, label = text_lockdown,
-  #   family = ft_text, size = ft_annotate_size, hjust = 0, colour = txt_col, lineheight = 0.35, vjust = 1,
-  #   label.colour = NA, fill = NA
-  # ) +
-  # annotate(
-  #   "curve", x = ymd("2019-06-01"), xend = ymd("2020-01-25"), y = 425000, yend = 580000,
-  #   arrow = arrow(length = unit(0.015, "npc"), type = "closed"), curvature = -0.3
-  # ) +
-  #
-  # # forecast
-  # annotate(
-  #   "richtext", x = ymd("2021-01-01"), y = 940000, label = text_forecast,
-  #   family = ft_text, size = ft_annotate_size, hjust = 1, colour = txt_col, lineheight = 0.35, vjust = 1,
-  #   label.colour = NA, fill = NA
-  # ) +
-  # annotate(
-  #   "curve", x = ymd("2021-01-11"), xend = ymd("2021-07-01"), y = 920000, yend = 880669,
-  #   arrow = arrow(length = unit(0.015, "npc"), type = "closed"), curvature = -0.3
-  # ) +
-  #
-  # # observed
-  # annotate(
-  #   "richtext", x = ymd("2021-12-01"), y = 300000, label = text_obs,
-  #   family = ft_text, size = ft_annotate_size, hjust = 0, colour = txt_col, lineheight = 0.35, vjust = 1,
-  #   label.colour = NA, fill = NA
-  # ) +
-  # annotate(
-  #   "curve", x = ymd("2021-11-20"), xend = ymd("2021-04-01"), y = 250000, yend = 227637,
-  #   arrow = arrow(length = unit(0.015, "npc"), type = "closed"), curvature = -0.3
-  # ) +
-
   # scales
   scale_y_continuous(
     breaks = 1:9*100000,
