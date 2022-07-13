@@ -40,7 +40,6 @@ caption <- glue("Graphic: {get_icon('twitter', 10, fill = list(bg = bg, img = tx
 # wrangle -----------------------------------------------------------------
 
 df_base <- flights |>
-  time_log() |>
   mutate(flt_date = floor_date(ymd(flt_date), unit = "month")) |>
   group_by(year, month_mon, flt_date) |>
   summarise(
