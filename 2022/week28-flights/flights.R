@@ -52,7 +52,11 @@ df_base <- flights |>
 mod <- df_base |>
   filter(flt_date < ymd("2020-02-01")) |>
   as_tsibble(index = yr_mth) |>
-  model(ARIMA(dep))
+  model(
+    arima = ARIMA(dep),
+    ets = ETS(dep)
+    ) |>
+  mutate(mod = (arima + ets)/2)
 
 # set new data
 new_data <- df_base |>
@@ -61,6 +65,7 @@ new_data <- df_base |>
 
 # forecast
 fcst <- mod |>
+  select(mod) |>
   forecast(new_data = new_data)
 
 # plot forecast
@@ -69,6 +74,7 @@ fcst |>
 
 # plot diagnostics
 mod |>
+  select(mod) |>
   gg_tsresiduals(lag_max = 12)
 
 # get predictions
@@ -125,7 +131,7 @@ df_base |>
     family = ft_text, size = 18, hjust = 0, colour = txt_col
     ) +
   annotate(
-    "text", x = ymd("2017-01-01"), y = 350000, label = "21,250,000",
+    "text", x = ymd("2017-01-01"), y = 350000, label = "10,625,000",
     family = ft_text, size = 64, hjust = 0, colour = txt_col, fontface = "bold"
   ) +
   annotate(
