@@ -1,6 +1,8 @@
 
 # start up ----------------------------------------------------------------
 
+# I know that this is inefficient but I'm ok with it
+
 library(tidyverse)
 library(lubridate)
 library(janitor)
@@ -269,3 +271,14 @@ ggname <- function(prefix, grob) {
   grob
 }
 
+
+# choose font colour ------------------------------------------------------
+
+choose_font_colour <- function(bg, dark = "#000000", light = "white") {
+  x <- drop(c(0.299, 0.587, 0.114) %*% col2rgb(bg) > 186)
+  if(x) {
+    dark
+  } else {
+    light
+  }
+}
