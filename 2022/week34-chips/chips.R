@@ -52,7 +52,7 @@ df_base |>
     x = "Transistors (Million)",
     y = "GFLOPS",
     size = "Die Size mm2",
-    colour = "Vendor",
+    colour = "Freq Mhz",
     title = "GPU Performance",
     subtitle = "GPU performance improvement is a joint effect of smaller\n
     transistors, larger die size, and higher frequency",
