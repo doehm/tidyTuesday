@@ -8,6 +8,7 @@ library(glue)
 library(ggtext)
 library(ggchicklet)
 library(magick)
+library(forcats)
 
 # load data ---------------------------------------------------------------
 
