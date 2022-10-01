@@ -180,7 +180,10 @@ get_icon <- function(name, size = 50, fill = NULL) {
   glue("<img src='{img}' height = {size} width = {size}>")
 }
 
-
+caption <- str_wrap(glue(
+  "Graphic: {get_icon('twitter', 10, fill = list(bg = bg, img = txt))} @danoehm /
+   Source: arts.gov by way of Data is Plural /
+   Code: {get_icon('github', 10, fill = list(bg = bg, img = txt))} doehm/tidytuesday #rstats #tidytuesday"), 1000)
 
 # ggtext colour -----------------------------------------------------------
 

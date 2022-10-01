@@ -7,6 +7,7 @@ library(glue)
 library(ggtext)
 library(forcats)
 library(ggbeeswarm)
+library(emojifont)
 
 # load data ---------------------------------------------------------------
 
@@ -24,6 +25,9 @@ font_add_google("Shrikhand", "title")
 showtext_auto()
 ft <- "txt"
 ft_title <- "title"
+
+fa_path <- systemfonts::font_info(family = "Font Awesome 6 Brands Regular")[["path"]]
+font_add(family = "fa-brands", regular = fa_path)
 
 # wrangle -----------------------------------------------------------------
 
@@ -51,17 +55,23 @@ df_base <- artists |>
 
 # titles ------------------------------------------------------------------
 
+twitter <- glue("<span style='font-family:\"fontawesome-webfont\";color:{txt}'>{fontawesome('fa-twitter')}</span>")
+github <- glue("<span style='font-family:\"fontawesome-webfont\";color:{txt}'>{fontawesome('fa-github')}</span>")
 caption <- str_wrap(glue(
-  "Graphic: @danoehm /
+  "Graphic: {twitter} @danoehm /
    Source: arts.gov by way of Data is Plural /
-   Code: doehm/tidytuesday #rstats #tidytuesday"), 1000)
+   Code: {github} doehm/tidytuesday #rstats #tidytuesday"),
+  1000)
+
 subtitle <- str_wrap(
   "The Location quotients (LQ) measure an artist occupation's concentration in the labor force,
   relative to the U.S. labor force share. For example, an LQ of 1.2 indicates that the state's
   labor force in an occupation is 20 percent greater than the occupation's national labor force
   share. An LQ of 0.8 indicates that the state's labor force in an occupation is 20 percent below
-  the occupation's national labor force share. California has proportionally more artists in every
-  category, paritcularly actors.", 100)
+  the occupation's national labor force share.", 100)
+
+# California has proportionally more artists in every
+# category, particularly actors.
 
 # plot --------------------------------------------------------------------
 
@@ -95,7 +105,7 @@ make_plot <- function(.state, .x) {
       plot.margin = margin(t = 30, b = 10, l = 30, r = 30),
       plot.caption = element_markdown(hjust = 0.5, margin = margin(t = 15)),
       plot.title = element_markdown(size = 100, hjust = 0.5, family = ft_title),
-      plot.subtitle = element_text(size = 36, hjust = 0.5, family = ft, lineheight = 0.25),
+      plot.subtitle = element_text(size = 36, hjust = 0.5, lineheight = 0.25),
       axis.text.x = element_text(),
       axis.title.x = element_text(margin = margin(t = 10)),
     )
@@ -104,8 +114,9 @@ make_plot <- function(.state, .x) {
 
 }
 
-
 # generate plots ----------------------------------------------------------
+
+make_plot("California", pal[6])
 
 states <- c("South Dakota", "District of Columbia", "Nevada", "New York")
 walk2(states, bright, make_plot)
