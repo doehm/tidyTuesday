@@ -64,11 +64,6 @@ df_yarn <- map_dfr(1:nrow(df_base), ~{
   mutate(y = -y) |>
   arrange(yarn_company_name, id)
 
-df_yarn |>
-  filter(yarn_company_name == "Katia") |>
-  ggplot(aes(x, y)) +
-  with_blur(geom_bspline0(), sigma = 2)
-
 # titles ------------------------------------------------------------------
 
 twitter <- glue("<span style='font-family:\"fontawesome-webfont\";color:{txt}'>{emojifont::fontawesome('fa-twitter')}</span>")
